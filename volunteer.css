@@ -1,0 +1,258 @@
+@import url("https//fonts.googleapis.com/css2?family=Poppinswght@400;600&display=swap");
+*{
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    box-sizing:border-box ;
+    font-family: "Poppins",sans-serif;
+
+}
+body{
+    display: flex;
+}
+
+.sidebar{
+    position: static;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 290px;
+    height: 100vh;
+    padding: 0 1.7rem;
+    color: #fff;
+    overflow: hidden;
+    transition: all 0.5s linear;
+    background: rgba(119,110,186,255);
+}
+.sidebar :hover{
+    width: 240px;
+    transition: 0.5s;
+}
+.logo{
+    height: 88px;
+    padding: 16px;
+}
+.menu{
+    height: 88%;
+    position:relative;
+    list-style: none;
+    padding: 0;
+
+}
+.menu li{
+    padding: 1rem;
+    margin:8px 0;
+transition: all 0.5s ease-out;
+border-radius: 8px;
+}
+.menu li:hover, .active{
+    background: #c8bebe58;
+}
+.menu a{
+    color: #fff;
+    font-size: 14px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+.menu a span{
+    overflow: hidden;
+
+}
+.menu a i{
+    font-size: 1.2rem;
+}
+.logout{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+}
+.main--content{
+    position: relative;
+    background: #ebe9e9;
+    width: 100%;
+    padding: 1rem;
+}
+.header--wrapper img{
+width: 50px;
+height: 50px;
+cursor: pointer;
+border-radius: 50%;
+}
+.header--wrapper{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px 2rem;
+    margin-bottom: 1rem;
+
+}
+.header--title{
+    color: rgba(119,110,186,255);
+}
+.user--info{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.search--box{
+    background: rgba(237,237,237);
+    border-radius: 15px;
+    color: rgba(119,110,186,255);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    
+    
+}
+.search--box input{
+    background: transparent;
+    padding: 10px;
+
+}
+.search--box i{
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.5s ease-out;
+}
+.search--box i:hover{
+    transform: scale(1.1);
+}
+
+.chart-container {
+    width: 400px;
+    height: 300px;
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow:0 4px 8px rgba(119,110,186,255);
+}
+h3 {
+    text-align: center;
+}
+
+section {
+    margin-bottom: 30px;
+  }
+ 
+  .badges-section {
+    background:#e3b5f9;
+    padding: 2rem;
+    border-radius: 20px;
+    margin: 1rem;
+    box-shadow:0 4px 8px rgba(119,110,186,255);
+  }
+  
+  .badge {
+    background: rgba(119,110,186,255);
+    padding:2rem;
+    border-radius: 12px;
+    font-weight: bold;
+    margin: 2rem;
+    
+  }
+  .upcoming {
+    margin-top: 10px;
+    color: #757575;
+  }
+  .badges{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  
+  button {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background: #1565c0;
+  }
+  
+ .task-management{
+    width: 300px;
+    height: 200px;
+    background:#e7d2f1;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow:0 4px 8px rgba(119,110,186,255);
+   
+ }
+ .event-calendar{
+    width: 300px;
+    height: 200px;
+    background:#e7d2f1;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow:0 4px 8px rgba(119,110,186,255);
+
+ }
+ .leaderboard{
+    width: 300px;
+    height: 200px;
+    background:#e7d2f1;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow:0 4px 8px rgba(119,110,186,255);
+
+ }
+ .communication-tools{
+    width: 300px;
+    height: 200px;
+    background:#e7d2f1;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow:0 4px 8px rgba(119,110,186,255);
+ }
+ 
+ .reports-certificates{
+    width: 300px;
+    height: 200px;
+    background:#e7d2f1;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow:0 4px 8px rgba(119,110,186,255);
+ }
+ button{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+ }
+ .manage{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+ }
+ .new{
+  padding: 2px;
+  background-color: red;
+  color: #fff;
+  font-size: small;
+  font-weight: 150;
+  border-radius: 4px;
+  
+ }

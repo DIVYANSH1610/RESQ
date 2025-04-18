@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  color: #fff;
+}
+
+
+/* Hero Section with Background Image */
+.hero {
+  height: 100vh;
+  background: url('Homepage.JPEG') no-repeat center center/cover;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Navigation Bar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.logo {
+  height: 70px;
+  border: none;
+  border-radius: 2px;
+  
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.nav-links li a:hover {
+  color: #00b4d8;
+}
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: #fff;
+  margin: 2px 0;
+  transition: all 0.3s;
+}
+
+
+
+.nav-links.active {
+  display: flex;
+}
+
+.updates-section {
+  text-align: center;
+  padding: 50px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  margin: 0 auto;
+  width: 80%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.updates-section h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.updates-section p {
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.explore-btn {
+  padding: 10px 30px;
+  font-size: 16px;
+  background: #00b4d8;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.explore-btn a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.explore-btn:hover {
+  background: #0077b6;
+}
+
+/* Info Cards Section */
+.info-cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 50px;
+  background: #f4f4f4;
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  background: #fff;
+  color: #333;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+}
+
+.emergency {
+  background: #ff4d4d;
+  color: #fff;
+}
+
+.help-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  background: #fff;
+  color: #ff4d4d;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.help-btn a {
+  text-decoration: none;
+  color:#ff4d4d;
+}
+
+.help-btn:hover {
+  background: #f0f0f0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hamburger {
+      display: flex;
+  }
+
+  .nav-links {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      text-align: center;
+  }
+
+  .nav-links li {
+      margin: 10px 0;
+  }
+
+  .nav-links.active {
+      display: flex;
+  }
+
+  .updates-section h1 {
+      font-size: 32px;
+  }
+
+  .info-cards {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .card {
+      width: 80%;
+  }
+}

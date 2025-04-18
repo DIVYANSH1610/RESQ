@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emergency SOS Hub</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+    * {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: #984c4c;
+      overflow: hidden;
+    }
+    .navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.logo {
+  height: 70px;
+  border: none;
+  border-radius: 2px;
+  
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.nav-links li a:hover {
+  color: #00b4d8;
+}
+
+
+
+.nav-links.active {
+  display: flex;
+}
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .left-panel {
+      width: 350px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      overflow-y: auto;
+      align-items: center;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #ff4444;
+      font-size: 2rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 2s ease-in-out;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    #sosButton {
+      padding: 12px 25px;
+      font-size: 1.1rem;
+      background: linear-gradient(45deg, #ff4444, #cc0000);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(255, 68, 68, 0.4);
+      transition: transform 0.2s, background 0.3s;
+      outline: none;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    #sosButton:hover {
+      background: linear-gradient(45deg, #cc0000, #ff4444);
+      transform: scale(1.05);
+    }
+
+    #sosButton:active {
+      transform: scale(0.95);
+    }
+
+    #map {
+      flex: 1;
+      height: 100%;
+      border-left: 2px solid #fff;
+    }
+
+    .search-bar {
+      width: 100%;
+      max-width: 250px;
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      outline: none;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .controls button {
+      padding: 10px;
+      font-size: 0.9rem;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .controls button:hover {
+      background: #45a049;
+    }
+
+    .status {
+      font-size: 1rem;
+      color: #ffeb3b;
+      display: none;
+      animation: pulse 1.5s infinite;
+      text-align: center;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .contact-options {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .contact-options button {
+      padding: 10px;
+      font-size: 0.9rem;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .contact-options button:hover {
+      background: #1976d2;
+    }
+
+    .weather {
+      font-size: 0.9rem;
+      color: #fff;
+      text-align: center;
+    }
+
+    .directions {
+      font-size: 0.9rem;
+      color: #fff;
+      display: none;
+      text-align: center;
+    }
+
+    .p {
+      color: white;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* Custom styles for the Get Directions button in popups */
+    .leaflet-popup-content button {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      background: linear-gradient(45deg, #4caf50, #2e7d32);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, background 0.3s;
+      margin-top: 5px;
+      display: inline-block;
+    }
+
+    .leaflet-popup-content button:hover {
+      background: linear-gradient(45deg, #2e7d32, #4caf50);
+      transform: scale(1.05);
+    }
+
+    .leaflet-popup-content button:active {
+      transform: scale(0.95);
+    }
+
+    @media (max-width: 800px) {
+      .container {
+        flex-direction: column;
+      }
+      .left-panel {
+        width: 100%;
+        height: auto;
+        overflow-y: visible;
+        padding: 15px;
+      }
+      #map {
+        height: 50vh;
+        width: 100%;
+        border-left: none;
+        border-top: 2px solid #fff;
+      }
+      h1 { font-size: 1.8rem; }
+      #sosButton { font-size: 1rem; }
+      .search-bar { width: 90%; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <img src="RESQ.jpg" alt="RESQ Logo" class="logo">
+
+<ul class="nav-links">
+    <li><a href="homepage.html">Home</a></li>
+    <li><a href="sos.html">SOS</a></li>
+    <li><a href="./templates/Qchat.html">Qchat</a></li>
+    <li><a href="service.html">Services</a></li>
+    <li><a href="ppj.html">Sign In</a></li>
+    
+</ul>
+</nav>
+  <div class="container">
+    <div class="left-panel">
+      <h1>Emergency SOS Hub</h1>
+      <button id="sosButton">Send SOS <i class="fas fa-exclamation-triangle"></i></button>
+      <input type="text" id="searchBar" class="search-bar" placeholder="Search location..." />
+      <div id="status" class="status">Sending SOS...</div>
+      <div class="controls">
+        <button onclick="locateUser()"><i class="fas fa-location-arrow"></i> My Location</button>
+        <button onclick="startLiveTracking()"><i class="fas fa-crosshairs"></i> Start Tracking</button>
+        <button onclick="zoomIn()"><i class="fas fa-plus"></i> Zoom In</button>
+        <button onclick="zoomOut()"><i class="fas fa-minus"></i> Zoom Out</button>
+      </div>
+      <div class="contact-options" id="contactOptions">
+        <button onclick="shareViaWhatsApp()">Share via WhatsApp <i class="fab fa-whatsapp"></i></button>
+        <button onclick="shareViaEmail()">Share via Email <i class="fas fa-envelope"></i></button>
+        <button onclick="callEmergency()">Call Emergency <i class="fas fa-phone"></i></button>
+      </div>
+      <div class="weather" id="weather">Weather: Loading...</div>
+      <div class="directions" id="directions">Directions: Follow the route on the map to your destination.</div>
+      <p class="p">After sending an SOS you can also wait on your location for help, the RESQ volunteer team will be there for your help ASAP!!!</p>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
+  <!-- Sound File (Hosted Online) -->
+  <audio id="siren" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
+  <script>
+    let map = L.map('map').setView([26.8467, 80.9462], 11); // Centered on Lucknow
+    let userLocation = null;
+    let marker = null;
+    let routingControl = null;
+    let siren = document.getElementById('siren');
+    let trackingInterval = null;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // SOS Marker Icon
+    const sosIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/484/484167.png',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40]
+    });
+
+    // Quell Zone Marker Icon
+    const quellZoneIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/1673/1673026.png',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40]
+    });
+
+    // Define Quell Zones in Lucknow
+    const quellZones = [
+      { name: "Quell Zone 1 - Civil Hospital", lat: 26.8492, lng: 80.9431 },
+      { name: "Quell Zone 2 - Lohia Hospital", lat: 26.8650, lng: 80.9562 },
+      { name: "Quell Zone 3 - Community Shelter", lat: 26.8780, lng: 80.9970 }
+    ];
+
+    // Add Quell Zones to Map with Attractive Directions Button
+    quellZones.forEach(zone => {
+      L.marker([zone.lat, zone.lng], { icon: quellZoneIcon })
+        .addTo(map)
+        .bindPopup(`<b>${zone.name}</b><br>Safe Quell Zone<br><button onclick="navigateToQuellZone(${zone.lat}, ${zone.lng})">Get Directions</button>`)
+        .on('click', () => {
+          document.getElementById('directions').style.display = 'block';
+          document.getElementById('directions').textContent = `Directions: Follow the yellow route to ${zone.name}.`;
+        });
+    });
+
+    // Handle SOS button click
+    document.getElementById('sosButton').addEventListener('click', () => {
+      siren.play();
+      document.getElementById('status').style.display = 'block';
+      getLocation();
+      setTimeout(() => {
+        document.getElementById('status').textContent = "SOS Sent Successfully!";
+        document.getElementById('contactOptions').style.display = 'flex';
+        siren.pause(); siren.currentTime = 0;
+        setTimeout(() => {
+          document.getElementById('status').style.display = 'none';
+        }, 3000);
+      }, 2000);
+    });
+
+    // Get user location and update map
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            userLocation = L.latLng(lat, lng);
+            map.setView(userLocation, 13);
+            if (marker) map.removeLayer(marker);
+            marker = L.marker(userLocation, { icon: sosIcon })
+              .addTo(map)
+              .bindPopup("<b>Emergency Location</b><br>SOS Sent Here")
+              .openPopup();
+            updateWeather(lat, lng);
+          },
+          (err) => {
+            console.error("Geolocation error:", err.message);
+            document.getElementById('status').textContent = "Location error. Using default.";
+            userLocation = L.latLng(26.8467, 80.9462);
+            if (marker) map.removeLayer(marker);
+            marker = L.marker(userLocation, { icon: sosIcon })
+              .addTo(map)
+              .bindPopup("Default Location")
+              .openPopup();
+          }
+        );
+      } else {
+        alert("Geolocation not supported.");
+        userLocation = L.latLng(26.8467, 80.9462);
+      }
+    }
+
+    // Search on Map with Directions
+    document.getElementById('searchBar').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        const query = this.value;
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.length > 0) {
+              const { lat, lon } = data[0];
+              map.setView([lat, lon], 13);
+              if (marker) map.removeLayer(marker);
+              marker = L.marker([lat, lon]).addTo(map).bindPopup(query).openPopup();
+              if (userLocation && routingControl) map.removeControl(routingControl);
+              routingControl = L.Routing.control({
+                waypoints: [userLocation, L.latLng(lat, lon)],
+                routeWhileDragging: false,
+                addWaypoints: false,
+                lineOptions: { styles: [{ color: '#ffff00', weight: 6, opacity: 0.8 }] } // Bright yellow, thicker line
+              }).addTo(map);
+              document.getElementById('directions').style.display = 'block';
+              document.getElementById('directions').textContent = `Directions: Follow the yellow route to ${query}.`;
+            } else {
+              alert("Location not found!");
+            }
+          })
+          .catch(err => console.error("Search error:", err));
+      }
+    });
+
+    // Navigate to Quell Zone
+    function navigateToQuellZone(lat, lng) {
+      if (!userLocation) {
+        alert("Waiting for your location...");
+        return;
+      }
+      if (routingControl) map.removeControl(routingControl);
+      routingControl = L.Routing.control({
+        waypoints: [userLocation, L.latLng(lat, lng)],
+        routeWhileDragging: false,
+        addWaypoints: false,
+        lineOptions: { styles: [{ color: '#ffff00', weight: 6, opacity: 0.8 }] } // Bright yellow, thicker line
+      }).addTo(map);
+      document.getElementById('directions').style.display = 'block';
+      document.getElementById('directions').textContent = `Directions: Follow the yellow route to the Quell Zone.`;
+    }
+
+    // Map Controls
+    function locateUser() {
+      if (userLocation) map.setView(userLocation, 13);
+      else alert("Location not available yet.");
+    }
+
+    function zoomIn() { map.zoomIn(); }
+    function zoomOut() { map.zoomOut(); }
+
+    // Live Tracking
+    function startLiveTracking() {
+      if (!trackingInterval) {
+        trackingInterval = setInterval(() => {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                userLocation = L.latLng(lat, lng);
+                map.setView(userLocation, 13);
+                if (marker) map.removeLayer(marker);
+                marker = L.marker(userLocation, { icon: sosIcon })
+                  .addTo(map)
+                  .bindPopup("<b>Live Location</b>")
+                  .openPopup();
+              },
+              (err) => console.error("Tracking error:", err.message)
+            );
+          }
+        }, 5000);
+        alert("Live tracking started. Refresh to stop.");
+      }
+    }
+
+    // Share via WhatsApp
+    function shareViaWhatsApp() {
+      if (!userLocation) {
+        alert("Location not available.");
+        return;
+      }
+      const lat = userLocation.lat;
+      const lng = userLocation.lng;
+      const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+      const message = `🚨 EMERGENCY! I need help! My location: ${mapsLink}`;
+      const whatsappURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(whatsappURL, '_blank');
+    }
+
+    // Share via Email
+    function shareViaEmail() {
+      if (!userLocation) {
+        alert("Location not available.");
+        return;
+      }
+      const lat = userLocation.lat;
+      const lng = userLocation.lng;
+      const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+      const subject = "Emergency SOS";
+      const body = `🚨 EMERGENCY! I need help! My location: ${mapsLink}`;
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
+    }
+
+    // Call Emergency (Simulated)
+    function callEmergency() {
+      alert("Calling emergency services... (Simulated)\nUse: 112 (India) or local emergency number.");
+    }
+
+    // Simulated Weather Update
+    function updateWeather(lat, lng) {
+      document.getElementById('weather').textContent = `Weather: Sunny, 28°C (Simulated for ${lat}, ${lng})`;
+    }
+  </script>
+</body>
+</html>

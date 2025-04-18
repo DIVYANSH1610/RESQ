@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard design</title>
+    <link rel="stylesheet" href="volunteer.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+   <div class="sidebar">
+    <div class="logo"></div>
+    <ul class="menu">
+       <h2>VOLUNTEER</h2>
+        <li class="active">
+       
+            <a href="#">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-user"></i>
+                <span> user</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-chart-bar"></i>
+                <span>Activity</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-briefcase"></i>
+                <span>Help</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-question-circle"></i>
+                <span>FAQ</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-star"></i>
+                <span>Testimonials</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </li>
+        <li class="logout">
+            <a href="#">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </li>
+    </ul>
+   </div> 
+   <div class="main--content">
+    <div class="header--wrapper">
+        <div class="header--title">
+            <span>Primary</span>
+            <h2>Dashboard</h2>
+        </div>
+        <div class="user--info">
+            <div class="search-box">
+            <i class="fa-solid-fa-search"></i>
+                <input type="text" placeholder="Search"/>
+            </div>
+            <img src="icon.jpg"/>
+        </div>
+    </div>
+    <section class="badges-section">
+        <h2>Badges & Achievements</h2>
+        <div class="badges">
+          <div class="badge">10 Hours Volunteered</div>
+          <div class="badge">Event Organizer</div>
+          <div class="badge">Community Impact Maker</div>
+        </div>
+        <p class="upcoming">Upcoming: 50 Hours Badge</p>
+      </section>
+      <div class="manage">
+      <section class="task-management">
+        <h2>Your Tasks <sup class="new">New</sup></h2>
+        <ul>
+          <li>Organize supplies - <span>In Progress</span></li>
+          <li>Register participants - <span>Completed</span></li>
+          <li>Set up event booth - <span>Pending</span></li>
+        </ul>
+      </section>
+  
+      <section class="event-calendar">
+        <h2>Upcoming Events<sup class="new">New</sup> </h2>
+        <ul>
+          <li>April 15: Spring Clean-Up Drive <button>RSVP</button></li>
+          <li>April 22: Earth Day Fair <button>RSVP</button></li>
+        </ul>
+      </section>
+  
+      <section class="leaderboard">
+        <h2>Top Volunteers</h2>
+        <ol>
+          <li>Alice - 50 hrs</li>
+          <li>Bob - 45 hrs</li>
+          <li>You - 25 hrs</li>
+        </ol>
+      </section>
+  
+      <section class="communication-tools">
+        <h2>Messages & Updates</h2>
+        <p>New: April volunteer briefing available now.</p>
+      </section>
+    <div class="chart-container">
+        <h3>2022 Hours by Need</h3>
+        <canvas id="donutChart"></canvas>
+    </div>
+    <!-- <section class="profile-settings">
+        <h2>Profile</h2>
+        <button>Edit Profile</button>
+      </section>
+   -->
+      <section class="reports-certificates">
+        <h2>Reports & Certificates</h2>
+        <button>Download Report</button>
+        <button>Get Certificate</button>
+      </section>
+   </div>
+</div>
+<script>
+    const ctx = document.getElementById('donutChart').getContext('2d');
+    const donutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Physical Labor', 'Education', 'Social', 'Food Prep', 'Skilled Labor', 'Other'],
+            datasets: [{
+                data: [20, 15, 15, 10, 25, 15], // Adjust percentages accordingly
+                backgroundColor: ['#c75c88', '#a685d4', '#5c50d4', '#d45078', '#648fd4', '#56b3c4'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

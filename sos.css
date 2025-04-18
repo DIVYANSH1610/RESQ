@@ -1,0 +1,46 @@
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: red;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: white;
+}
+
+.container {
+  text-align: center;
+}
+
+button {
+  display: block;
+  background-color: white;
+  height: 200px;
+  width: 200px;
+  color: red;
+  border: none;
+  border-radius: 50%;
+  padding: 15px 30px;
+  font-size: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  justify-items: center;
+
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+  background-color: #ffcccc;
+  color: #990000;
+  padding: 25px 40px;
+  height: 350px;
+  width: 350px;
+  font-size: 60px;
+  font-weight: bolder;
+}
+.content{
+  
+}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login/SignUp</title>
+  <link rel="stylesheet" href="ppj.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    /* Additional styles for the health form and popup */
+    .health-form {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
+    }
+
+    .health-form.active {
+      display: block;
+    }
+
+    .health-form h2 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .health-form .input-box {
+      margin: 15px 0;
+    }
+
+    .health-form .input-box input,
+    .health-form .input-box textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .health-form .input-box i {
+      display: none; /* No icon for health inputs */
+    }
+
+    .health-form button {
+      width: 100%;
+      height: 48px;
+      background: #28a745;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .health-form button:hover {
+      background: #218838;
+    }
+
+    .alert-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #d4edda;
+      color: #155724;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .alert-popup.active {
+      display: block;
+    }
+
+    /* Ensure the login link button matches the button style */
+    .login-link {
+      width: 100%;
+      height: 48px;
+      background: #7494ec;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .login-link:hover {
+      background: #5a73d6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-box login">
+      <form action="#" id="loginForm">
+        <h1>Login</h1>
+        <div class="input-box">
+          <input type="text" placeholder="Username" required>
+          <i class="bx bxs-user"></i>
+        </div>
+        <div class="input-box">
+          <input type="password" placeholder="password" required>
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+        <div class="forgot-link">
+          <a href="#">Forgot Password?</a>
+        </div>
+        <a href="homepage.html" class="login-link" id="loginLink">Login</a> 
+        <p>or login with social platforms</p>
+        <div class="social-icons">
+          <a href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Faccounts.google.com%2F&followup=https%3A%2F%2Faccounts.google.com%2F&ifkv=AXH0vVsZiCKbVd0T_Zja1ejzWcHODQTbh2AxxmJ0SsJb40K-ZjABXTo5YdsNM44hrWjJ4qGShwdt&passive=1209600&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S-737085355%3A1744397052125368"><i class="bx bxl-google"></i></a>
+          <a href="https://www.facebook.com/login.php/"><i class="bx bxl-facebook"></i></a>
+          <a href="https://github.com/login"><i class="bx bxl-github"></i></a>
+          <a href="https://www.linkedin.com/login"><i class="bx bxl-linkedin"></i></a>
+        </div>
+      </form>
+    </div>
+    <div class="form-box register">
+      <form action="#" id="registerForm">
+        <h1>Registration</h1>
+        <div class="input-box">
+          <input type="text" placeholder="Username" required>
+          <i class="bx bxs-user"></i>
+        </div>
+        <div class="input-box">
+          <input type="email" placeholder="Email" required>
+          <i class="bx bxs-envelope"></i>
+        </div>
+        <div class="input-box">
+          <input type="password" placeholder="Password" required>
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+        <button type="submit" class="btn">Register</button>
+        <p>or register with social platforms</p>
+        <div class="social-icons">
+          <a href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Faccounts.google.com%2F&followup=https%3A%2F%2Faccounts.google.com%2F&ifkv=AXH0vVsZiCKbVd0T_Zja1ejzWcHODQTbh2AxxmJ0SsJb40K-ZjABXTo5YdsNM44hrWjJ4qGShwdt&passive=1209600&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S-737085355%3A1744397052125368"><i class="bx bxl-google"></i></a>
+          <a href="https://www.facebook.com/login.php/"><i class="bx bxl-facebook"></i></a>
+          <a href="https://github.com/login"><i class="bx bxl-github"></i></a>
+          <a href="https://www.linkedin.com/login"><i class="bx bxl-linkedin"></i></a>
+        </div>
+      </form>
+    </div>
+    <div class="toggle-box">
+      <div class="toggle-panel toggle-left">
+        <h1>Hello, Welcome!</h1>
+        <p>Don't have an account?</p>
+        <button class="btn register-btn">Register</button>
+      </div>
+      <div class="toggle-panel toggle-right">
+        <h1>Welcome Back!</h1>
+        <p>Already have an account?</p>
+        <button class="btn login-btn">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Health Form -->
+  <div class="health-form" id="healthForm">
+    <h2>Health Information</h2>
+    <form id="healthInfoForm">
+      <div class="input-box">
+        <input type="text" placeholder="Allergies (e.g., Peanuts, Pollen)" required>
+      </div>
+      <div class="input-box">
+        <input type="text" placeholder="Chronic Diseases (e.g., Diabetes, Asthma)">
+      </div>
+      <div class="input-box">
+        <textarea placeholder="Other Health Concerns (e.g., Medications, Conditions)" rows="3"></textarea>
+      </div>
+      <button type="submit">Submit Health Info</button>
+    </form>
+  </div>
+
+  <!-- Success Alert Popup -->
+  <div class="alert-popup" id="successPopup">
+    We have successfully received your data!
+  </div>
+
+  <script src="ppj.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.querySelector('.container');
+      const registerBtn = document.querySelector('.register-btn');
+      const loginBtn = document.querySelector('.login-btn');
+      const registerForm = document.getElementById('registerForm');
+      const healthForm = document.getElementById('healthForm');
+      const healthInfoForm = document.getElementById('healthInfoForm');
+      const successPopup = document.getElementById('successPopup');
+
+      registerBtn.addEventListener('click', () => {
+        container.classList.add('active');
+      });
+
+      loginBtn.addEventListener('click', () => {
+        container.classList.remove('active');
+      });
+
+      // Handle registration form submission
+      registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        healthForm.classList.add('active'); // Show health form after registration
+        registerForm.reset(); // Clear registration form
+      });
+
+      // Handle health form submission
+      healthInfoForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const allergies = healthInfoForm.querySelector('input[placeholder="Allergies (e.g., Peanuts, Pollen)"]').value;
+        const diseases = healthInfoForm.querySelector('input[placeholder="Chronic Diseases (e.g., Diabetes, Asthma)"]').value;
+        const concerns = healthInfoForm.querySelector('textarea[placeholder="Other Health Concerns (e.g., Medications, Conditions)"]').value;
+
+        // Simulate data storage (in a real app, send to a server)
+        console.log('Allergies:', allergies);
+        console.log('Diseases:', diseases);
+        console.log('Concerns:', concerns);
+
+        healthForm.classList.remove('active'); // Hide health form
+        successPopup.classList.add('active'); // Show success popup
+
+        // Hide popup after 3 seconds
+        setTimeout(() => {
+          successPopup.classList.remove('active');
+        }, 3000);
+      });
+    });
+  </script>
+</body>
+</html>
