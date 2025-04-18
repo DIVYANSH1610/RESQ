@@ -24,7 +24,7 @@ cards.forEach(card => {
         if (e.target.classList.contains('help-btn')) return;
 
         const info = card.getAttribute('data-info');
-        alert(Details: ${info});
+        alert(`Details: ${info}`);
     });
 });
 
