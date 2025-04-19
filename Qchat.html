@@ -345,7 +345,7 @@
             userInput.value = '';
 
             try {
-                const response = await fetch(`http://127.0.0.1:5000/get?msg=${encodeURIComponent(message)}`, {
+                const response = await fetch(`https://resq-ziw9.onrender.com/get?msg=${encodeURIComponent(message)}`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
