@@ -5,7 +5,8 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-groq_api_key = "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"
+groq_api_key = os.getenv("GROQ_API_KEY")
+# groq_api_key = "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"
 client = Groq(api_key=groq_api_key)
 
 @app.route('/')
@@ -56,4 +57,5 @@ def get_bot_response():
         return jsonify({'response': f'Error: {str(e)}'})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(debug=False)
