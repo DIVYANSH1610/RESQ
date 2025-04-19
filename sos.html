@@ -4,13 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Emergency SOS Hub</title>
-
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-  <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
     * {
@@ -19,7 +15,6 @@
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Arial', sans-serif;
       background: linear-gradient(135deg, #1e3c72, #2a5298);
@@ -27,50 +22,40 @@
       overflow: hidden;
     }
     .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 50px;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.logo {
-  height: 70px;
-  border: none;
-  border-radius: 2px;
-  
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
-
-.nav-links li a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 16px;
-  transition: color 0.3s;
-}
-
-.nav-links li a:hover {
-  color: #00b4d8;
-}
-
-
-
-.nav-links.active {
-  display: flex;
-}
-
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .logo {
+      height: 70px;
+      border: none;
+      border-radius: 2px;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+    .nav-links li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    .nav-links li a:hover {
+      color: #00b4d8;
+    }
+    .nav-links.active {
+      display: flex;
+    }
     .container {
       display: flex;
       flex-direction: row;
       height: 100vh;
       width: 100vw;
     }
-
     .left-panel {
       width: 350px;
       padding: 20px;
@@ -83,7 +68,6 @@
       align-items: center;
       box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
     }
-
     h1 {
       color: #ff4444;
       font-size: 2rem;
@@ -91,12 +75,10 @@
       animation: fadeIn 2s ease-in-out;
       text-align: center;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
     #sosButton {
       padding: 12px 25px;
       font-size: 1.1rem;
@@ -111,22 +93,18 @@
       width: 100%;
       max-width: 250px;
     }
-
     #sosButton:hover {
       background: linear-gradient(45deg, #cc0000, #ff4444);
       transform: scale(1.05);
     }
-
     #sosButton:active {
       transform: scale(0.95);
     }
-
     #map {
       flex: 1;
       height: 100%;
       border-left: 2px solid #fff;
     }
-
     .search-bar {
       width: 100%;
       max-width: 250px;
@@ -137,7 +115,6 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       outline: none;
     }
-
     .controls {
       display: flex;
       flex-direction: column;
@@ -145,7 +122,6 @@
       width: 100%;
       max-width: 250px;
     }
-
     .controls button {
       padding: 10px;
       font-size: 0.9rem;
@@ -156,11 +132,9 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-
     .controls button:hover {
       background: #45a049;
     }
-
     .status {
       font-size: 1rem;
       color: #ffeb3b;
@@ -168,13 +142,11 @@
       animation: pulse 1.5s infinite;
       text-align: center;
     }
-
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.1); }
       100% { transform: scale(1); }
     }
-
     .contact-options {
       display: none;
       flex-direction: column;
@@ -182,7 +154,6 @@
       width: 100%;
       max-width: 250px;
     }
-
     .contact-options button {
       padding: 10px;
       font-size: 0.9rem;
@@ -193,31 +164,25 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-
     .contact-options button:hover {
       background: #1976d2;
     }
-
     .weather {
       font-size: 0.9rem;
       color: #fff;
       text-align: center;
     }
-
     .directions {
       font-size: 0.9rem;
       color: #fff;
       display: none;
       text-align: center;
     }
-
     .p {
       color: white;
       font-size: 0.9rem;
       text-align: center;
     }
-
-    /* Custom styles for the Get Directions button in popups */
     .leaflet-popup-content button {
       padding: 8px 16px;
       font-size: 0.9rem;
@@ -231,16 +196,13 @@
       margin-top: 5px;
       display: inline-block;
     }
-
     .leaflet-popup-content button:hover {
       background: linear-gradient(45deg, #2e7d32, #4caf50);
       transform: scale(1.05);
     }
-
     .leaflet-popup-content button:active {
       transform: scale(0.95);
     }
-
     @media (max-width: 800px) {
       .container {
         flex-direction: column;
@@ -265,17 +227,15 @@
 </head>
 <body>
   <nav class="navbar">
-    <img src="RESQ.jpg" alt="RESQ Logo" class="logo">
-
-<ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="sos.html">SOS</a></li>
-    <li><a href="./templates/Qchat.html">Qchat</a></li>
-    <li><a href="service.html">Services</a></li>
-    <li><a href="ppj.html">Sign In</a></li>
-    
-</ul>
-</nav>
+    <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="sos.html">SOS</a></li>
+      <li><a href="Qchat.html">Qchat</a></li>
+      <li><a href="service.html">Services</a></li>
+      <li><a href="ppj.html">Sign In</a></li>
+    </ul>
+  </nav>
   <div class="container">
     <div class="left-panel">
       <h1>Emergency SOS Hub</h1>
@@ -300,13 +260,11 @@
     <div id="map"></div>
   </div>
 
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
-  <!-- Sound File (Hosted Online) -->
   <audio id="siren" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
   <script>
-    let map = L.map('map').setView([26.8467, 80.9462], 11); // Centered on Lucknow
+    let map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
     let userLocation = null;
     let marker = null;
     let routingControl = null;
@@ -318,7 +276,6 @@
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // SOS Marker Icon
     const sosIcon = L.icon({
       iconUrl: 'https://cdn-icons-png.flaticon.com/512/484/484167.png',
       iconSize: [40, 40],
@@ -326,7 +283,6 @@
       popupAnchor: [0, -40]
     });
 
-    // Quell Zone Marker Icon
     const quellZoneIcon = L.icon({
       iconUrl: 'https://cdn-icons-png.flaticon.com/512/1673/1673026.png',
       iconSize: [40, 40],
@@ -334,22 +290,237 @@
       popupAnchor: [0, -40]
     });
 
-    // Define Quell Zones in Lucknow
-    const quellZones = [
-      { name: "Quell Zone 1 - Civil Hospital", lat: 26.8492, lng: 80.9431 },
-      { name: "Quell Zone 2 - Lohia Hospital", lat: 26.8650, lng: 80.9562 },
-      { name: "Quell Zone 3 - Community Shelter", lat: 26.8780, lng: 80.9970 }
+    // Indian capital cities with coordinates and random quell zones (2-5)
+    const capitalCities = [
+      { name: "Agartala", state: "Tripura", lat: 23.8315, lng: 91.2868, zones: getRandomZones(2, 5, [
+          { name: "Agartala Hospital", lat: 23.835, lng: 91.285 },
+          { name: "Community Shelter", lat: 23.829, lng: 91.290 },
+          { name: "Ujjayanta Palace", lat: 23.833, lng: 91.282 },
+          { name: "Tripura Medical College", lat: 23.837, lng: 91.288 }
+        ]) },
+      { name: "Aizawl", state: "Mizoram", lat: 23.7271, lng: 92.7176, zones: getRandomZones(2, 5, [
+          { name: "Civil Hospital", lat: 23.729, lng: 92.715 },
+          { name: "Shelter Zone", lat: 23.725, lng: 92.720 },
+          { name: "Zoram Medical College", lat: 23.731, lng: 92.713 },
+          { name: "Dawrpui Shelter", lat: 23.723, lng: 92.718 }
+        ]) },
+      { name: "Amaravati", state: "Andhra Pradesh", lat: 16.541, lng: 80.515, zones: getRandomZones(2, 5, [
+          { name: "AIIMS Mangalagiri", lat: 16.543, lng: 80.517 },
+          { name: "Community Center", lat: 16.539, lng: 80.513 },
+          { name: "Vijayawada Hospital", lat: 16.5062, lng: 80.6480 },
+          { name: "Guntur Medical College", lat: 16.306, lng: 80.436 }
+        ]) },
+      { name: "Bengaluru", state: "Karnataka", lat: 12.9716, lng: 77.5946, zones: getRandomZones(2, 5, [
+          { name: "Victoria Hospital", lat: 12.963, lng: 77.587 },
+          { name: "NIMHANS", lat: 12.943, lng: 77.598 },
+          { name: "Jayanagar Shelter", lat: 12.930, lng: 77.583 },
+          { name: "Koramangala Center", lat: 12.935, lng: 77.624 },
+          { name: "St. John's Hospital", lat: 12.933, lng: 77.630 }
+        ]) },
+      { name: "Bhopal", state: "Madhya Pradesh", lat: 23.2599, lng: 77.4126, zones: getRandomZones(2, 5, [
+          { name: "AIIMS Bhopal", lat: 23.260, lng: 77.413 },
+          { name: "Hamidia Hospital", lat: 23.253, lng: 77.408 },
+          { name: "Lake View Shelter", lat: 23.265, lng: 77.418 },
+          { name: "Chirayu Hospital", lat: 23.250, lng: 77.420 }
+        ]) },
+      { name: "Bhubaneswar", state: "Odisha", lat: 20.2961, lng: 85.8245, zones: getRandomZones(2, 5, [
+          { name: "Capital Hospital", lat: 20.294, lng: 85.823 },
+          { name: "AIIMS Bhubaneswar", lat: 20.290, lng: 85.827 },
+          { name: "Kalinga Stadium Shelter", lat: 20.298, lng: 85.820 },
+          { name: "SUM Hospital", lat: 20.285, lng: 85.830 }
+        ]) },
+      { name: "Chandigarh", state: "Chandigarh (UT)", lat: 30.7333, lng: 76.7794, zones: getRandomZones(2, 5, [
+          { name: "PGIMER", lat: 30.735, lng: 76.775 },
+          { name: "Sector 17 Shelter", lat: 30.732, lng: 76.782 },
+          { name: "GMCH Sector 32", lat: 30.729, lng: 76.786 },
+          { name: "Civil Hospital Sector 6", lat: 30.740, lng: 76.770 }
+        ]) },
+      { name: "Chennai", state: "Tamil Nadu", lat: 13.0827, lng: 80.2707, zones: getRandomZones(2, 5, [
+          { name: "Rajiv Gandhi Hospital", lat: 13.080, lng: 80.272 },
+          { name: "Apollo Hospital", lat: 13.085, lng: 80.268 },
+          { name: "Marina Shelter", lat: 13.078, lng: 80.275 },
+          { name: "Adyar Center", lat: 13.006, lng: 80.257 },
+          { name: "Stanley Medical College", lat: 13.104, lng: 80.286 }
+        ]) },
+      { name: "Daman", state: "Daman & Diu (UT)", lat: 20.3974, lng: 72.8328, zones: getRandomZones(2, 5, [
+          { name: "Government Hospital", lat: 20.398, lng: 72.831 },
+          { name: "Community Hall", lat: 20.396, lng: 72.834 },
+          { name: "Moti Daman Shelter", lat: 20.395, lng: 72.830 }
+        ]) },
+      { name: "Dehradun", state: "Uttarakhand", lat: 30.3165, lng: 78.0322, zones: getRandomZones(2, 5, [
+          { name: "Doon Hospital", lat: 30.318, lng: 78.030 },
+          { name: "Coronation Hospital", lat: 30.315, lng: 78.035 },
+          { name: "Rajpur Road Shelter", lat: 30.320, lng: 78.028 },
+          { name: "Max Hospital", lat: 30.313, lng: 78.040 }
+        ]) },
+      { name: "Dispur", state: "Assam", lat: 26.1445, lng: 91.7898, zones: getRandomZones(2, 5, [
+          { name: "GMCH Guwahati", lat: 26.146, lng: 91.787 },
+          { name: "Dispur Hospital", lat: 26.143, lng: 91.792 },
+          { name: "Khanapara Shelter", lat: 26.140, lng: 91.795 },
+          { name: "Apollo Hospital Guwahati", lat: 26.141, lng: 91.790 }
+        ]) },
+      { name: "Gandhinagar", state: "Gujarat", lat: 23.2156, lng: 72.6369, zones: getRandomZones(2, 5, [
+          { name: "Civil Hospital", lat: 23.217, lng: 72.635 },
+          { name: "Apollo Hospital", lat: 23.213, lng: 72.639 },
+          { name: "Sector 21 Shelter", lat: 23.220, lng: 72.633 },
+          { name: "Gandhinagar Medical College", lat: 23.210, lng: 72.641 }
+        ]) },
+      { name: "Gangtok", state: "Sikkim", lat: 27.3389, lng: 88.6065, zones: getRandomZones(2, 5, [
+          { name: "STNM Hospital", lat: 27.340, lng: 88.605 },
+          { name: "Tadong Shelter", lat: 27.337, lng: 88.610 },
+          { name: "Sichey Community Center", lat: 27.335, lng: 88.607 }
+        ]) },
+      { name: "Hyderabad", state: "Telangana", lat: 17.3850, lng: 78.4867, zones: getRandomZones(2, 5, [
+          { name: "Osmania Hospital", lat: 17.387, lng: 78.485 },
+          { name: "Gandhi Hospital", lat: 17.390, lng: 78.482 },
+          { name: "Banjara Hills Shelter", lat: 17.383, lng: 78.490 },
+          { name: "Hi-Tech City Center", lat: 17.441, lng: 78.380 },
+          { name: "Care Hospital", lat: 17.412, lng: 78.475 }
+        ]) },
+      { name: "Imphal", state: "Manipur", lat: 24.8170, lng: 93.9368, zones: getRandomZones(2, 5, [
+          { name: "RIMS Hospital", lat: 24.819, lng: 93.935 },
+          { name: "JNIMS Hospital", lat: 24.815, lng: 93.940 },
+          { name: "Lamphelpat Shelter", lat: 24.820, lng: 93.932 },
+          { name: "City Hospital", lat: 24.813, lng: 93.938 }
+        ]) },
+      { name: "Itanagar", state: "Arunachal Pradesh", lat: 27.0844, lng: 93.6053, zones: getRandomZones(2, 5, [
+          { name: "TRIHMS", lat: 27.085, lng: 93.604 },
+          { name: "Naharlagun Shelter", lat: 27.083, lng: 93.607 },
+          { name: "Itanagar Community Center", lat: 27.087, lng: 93.602 }
+        ]) },
+      { name: "Jaipur", state: "Rajasthan", lat: 26.9124, lng: 75.7873, zones: getRandomZones(2, 5, [
+          { name: "Sawai Man Singh Hospital", lat: 26.914, lng: 75.785 },
+          { name: "Jaipur Hospital", lat: 26.910, lng: 75.790 },
+          { name: "Mansarovar Shelter", lat: 26.905, lng: 75.780 },
+          { name: "Vidhyadhar Nagar Center", lat: 26.920, lng: 75.795 },
+          { name: "Fortis Hospital", lat: 26.908, lng: 75.782 }
+        ]) },
+      { name: "Jammu", state: "Jammu & Kashmir (UT)", lat: 32.7266, lng: 74.8570, zones: getRandomZones(2, 5, [
+          { name: "GMCH Jammu", lat: 32.728, lng: 74.855 },
+          { name: "SMGS Hospital", lat: 32.725, lng: 74.860 },
+          { name: "Gandhi Nagar Shelter", lat: 32.730, lng: 74.852 },
+          { name: "Shri Mata Vaishno Devi Hospital", lat: 32.723, lng: 74.862 }
+        ]) },
+      { name: "Kargil", state: "Ladakh (UT)", lat: 34.5539, lng: 76.1349, zones: getRandomZones(2, 5, [
+          { name: "District Hospital", lat: 34.555, lng: 76.133 },
+          { name: "Community Shelter", lat: 34.552, lng: 76.137 },
+          { name: "Kargil Health Center", lat: 34.557, lng: 76.130 }
+        ]) },
+      { name: "Kohima", state: "Nagaland", lat: 25.6586, lng: 94.1053, zones: getRandomZones(2, 5, [
+          { name: "NHAK Hospital", lat: 25.660, lng: 94.104 },
+          { name: "Kohima Shelter", lat: 25.657, lng: 94.107 },
+          { name: "Botsa Community Center", lat: 25.655, lng: 94.110 }
+        ]) },
+      { name: "Kolkata", state: "West Bengal", lat: 22.5726, lng: 88.3639, zones: getRandomZones(2, 5, [
+          { name: "SSKM Hospital", lat: 22.570, lng: 88.360 },
+          { name: "Medical College", lat: 22.575, lng: 88.365 },
+          { name: "Salt Lake Shelter", lat: 22.580, lng: 88.370 },
+          { name: "Howrah Center", lat: 22.595, lng: 88.263 },
+          { name: "Apollo Gleneagles", lat: 22.577, lng: 88.412 }
+        ]) },
+      { name: "Lucknow", state: "Uttar Pradesh", lat: 26.8467, lng: 80.9462, zones: getRandomZones(2, 5, [
+          { name: "Civil Hospital", lat: 26.8492, lng: 80.9431 },
+          { name: "Lohia Hospital", lat: 26.8650, lng: 80.9562 },
+          { name: "Community Shelter", lat: 26.8780, lng: 80.9970 },
+          { name: "Gomti Nagar Center", lat: 26.855, lng: 80.975 },
+          { name: "KGMC", lat: 26.870, lng: 80.940 }
+        ]) },
+      { name: "Mumbai", state: "Maharashtra", lat: 19.0760, lng: 72.8777, zones: getRandomZones(2, 5, [
+          { name: "KEM Hospital", lat: 19.078, lng: 72.875 },
+          { name: "JJ Hospital", lat: 19.080, lng: 72.880 },
+          { name: "Bandra Shelter", lat: 19.070, lng: 72.870 },
+          { name: "Worli Center", lat: 19.060, lng: 72.865 },
+          { name: "Sion Hospital", lat: 19.045, lng: 72.890 }
+        ]) },
+      { name: "New Delhi", state: "Delhi (UT)", lat: 28.6139, lng: 77.2090, zones: getRandomZones(2, 5, [
+          { name: "AIIMS Delhi", lat: 28.615, lng: 77.207 },
+          { name: "Safdarjung Hospital", lat: 28.610, lng: 77.212 },
+          { name: "Connaught Place Shelter", lat: 28.620, lng: 77.215 },
+          { name: "Rohini Center", lat: 28.705, lng: 77.126 },
+          { name: "LNJP Hospital", lat: 28.618, lng: 77.230 }
+        ]) },
+      { name: "Panaji", state: "Goa", lat: 15.4909, lng: 73.8278, zones: getRandomZones(2, 5, [
+          { name: "Goa Medical College", lat: 15.492, lng: 73.825 },
+          { name: "Miramar Shelter", lat: 15.489, lng: 73.830 },
+          { name: "Dona Paula Center", lat: 15.487, lng: 73.828 }
+        ]) },
+      { name: "Patna", state: "Bihar", lat: 25.5941, lng: 85.1376, zones: getRandomZones(2, 5, [
+          { name: "PMCH Patna", lat: 25.596, lng: 85.135 },
+          { name: "IGIMS", lat: 25.590, lng: 85.140 },
+          { name: "Gandhi Maidan Shelter", lat: 25.598, lng: 85.132 },
+          { name: "Patna Medical College", lat: 25.595, lng: 85.138 }
+        ]) },
+      { name: "Port Blair", state: "Andaman & Nicobar (UT)", lat: 11.6234, lng: 92.7265, zones: getRandomZones(2, 5, [
+          { name: "GB Pant Hospital", lat: 11.625, lng: 92.725 },
+          { name: "Aberdeen Shelter", lat: 11.621, lng: 92.728 },
+          { name: "Junglighat Center", lat: 11.620, lng: 92.727 }
+        ]) },
+      { name: "Puducherry", state: "Puducherry (UT)", lat: 11.9139, lng: 79.8145, zones: getRandomZones(2, 5, [
+          { name: "JIPMER", lat: 11.915, lng: 79.813 },
+          { name: "Beach Road Shelter", lat: 11.912, lng: 79.816 },
+          { name: "Lawspet Community Center", lat: 11.917, lng: 79.811 }
+        ]) },
+      { name: "Raipur", state: "Chhattisgarh", lat: 21.2514, lng: 81.6296, zones: getRandomZones(2, 5, [
+          { name: "AIIMS Raipur", lat: 21.253, lng: 81.627 },
+          { name: "Mekahara Hospital", lat: 21.250, lng: 81.632 },
+          { name: "Telibandha Shelter", lat: 21.255, lng: 81.625 },
+          { name: "Ramkrishna Hospital", lat: 21.248, lng: 81.630 }
+        ]) },
+      { name: "Ranchi", state: "Jharkhand", lat: 23.3441, lng: 85.3096, zones: getRandomZones(2, 5, [
+          { name: "RIMS Ranchi", lat: 23.346, lng: 85.307 },
+          { name: "Sadar Hospital", lat: 23.342, lng: 85.312 },
+          { name: "Kanke Shelter", lat: 23.350, lng: 85.305 },
+          { name: "Medica Hospital", lat: 23.340, lng: 85.315 }
+        ]) },
+      { name: "Shillong", state: "Meghalaya", lat: 25.5788, lng: 91.8933, zones: getRandomZones(2, 5, [
+          { name: "NEIGRIHMS", lat: 25.580, lng: 91.891 },
+          { name: "Civil Hospital", lat: 25.577, lng: 91.895 },
+          { name: "Laitumkhrah Shelter", lat: 25.575, lng: 91.890 },
+          { name: "Ganesh Das Hospital", lat: 25.579, lng: 91.897 }
+        ]) },
+      { name: "Shimla", state: "Himachal Pradesh", lat: 31.1048, lng: 77.1734, zones: getRandomZones(2, 5, [
+          { name: "IGMC Shimla", lat: 31.106, lng: 77.172 },
+          { name: "KNH Hospital", lat: 31.103, lng: 77.175 },
+          { name: "Mall Road Shelter", lat: 31.108, lng: 77.170 },
+          { name: "Deen Dayal Hospital", lat: 31.101, lng: 77.178 }
+        ]) },
+      { name: "Silvassa", state: "Dadra & Nagar Haveli (UT)", lat: 20.2763, lng: 73.0083, zones: getRandomZones(2, 5, [
+          { name: "Vinoba Bhave Hospital", lat: 20.278, lng: 73.007 },
+          { name: "Community Center", lat: 20.275, lng: 73.010 },
+          { name: "Silvassa Shelter", lat: 20.274, lng: 73.012 }
+        ]) },
+      { name: "Srinagar", state: "Jammu & Kashmir (UT)", lat: 34.0837, lng: 74.7973, zones: getRandomZones(2, 5, [
+          { name: "SMHS Hospital", lat: 34.085, lng: 74.795 },
+          { name: "SKIMS", lat: 34.080, lng: 74.800 },
+          { name: "Dal Lake Shelter", lat: 34.088, lng: 74.792 },
+          { name: "Lal Ded Hospital", lat: 34.082, lng: 74.798 }
+        ]) },
+      { name: "Thiruvananthapuram", state: "Kerala", lat: 8.5241, lng: 76.9366, zones: getRandomZones(2, 5, [
+          { name: "Medical College", lat: 8.526, lng: 76.935 },
+          { name: "General Hospital", lat: 8.522, lng: 76.938 },
+          { name: "Veli Shelter", lat: 8.520, lng: 76.940 },
+          { name: "Pattom Center", lat: 8.530, lng: 76.932 },
+          { name: "SCTIMST", lat: 8.528, lng: 76.930 }
+        ]) }
     ];
 
-    // Add Quell Zones to Map with Attractive Directions Button
-    quellZones.forEach(zone => {
-      L.marker([zone.lat, zone.lng], { icon: quellZoneIcon })
-        .addTo(map)
-        .bindPopup(`<b>${zone.name}</b><br>Safe Quell Zone<br><button onclick="navigateToQuellZone(${zone.lat}, ${zone.lng})">Get Directions</button>`)
-        .on('click', () => {
-          document.getElementById('directions').style.display = 'block';
-          document.getElementById('directions').textContent = `Directions: Follow the yellow route to ${zone.name}.`;
-        });
+    // Function to get random number of zones (2-5) from provided list
+    function getRandomZones(min, max, zones) {
+      const count = Math.floor(Math.random() * (max - min + 1)) + min;
+      return zones.sort(() => 0.5 - Math.random()).slice(0, count);
+    }
+
+    // Add Quell Zones to Map
+    capitalCities.forEach(city => {
+      city.zones.forEach(zone => {
+        L.marker([zone.lat, zone.lng], { icon: quellZoneIcon })
+          .addTo(map)
+          .bindPopup(`<b>${zone.name}</b><br>Safe Quell Zone in ${city.name}<br><button onclick="navigateToQuellZone(${zone.lat}, ${zone.lng})">Get Directions</button>`)
+          .on('click', () => {
+            document.getElementById('directions').style.display = 'block';
+            document.getElementById('directions').textContent = `Directions: Follow the yellow route to ${zone.name} in ${city.name}.`;
+          });
+      });
     });
 
     // Handle SOS button click
@@ -361,6 +532,7 @@
         document.getElementById('status').textContent = "SOS Sent Successfully!";
         document.getElementById('contactOptions').style.display = 'flex';
         siren.pause(); siren.currentTime = 0;
+        alert("Your location is sent\nHelp will be arrived soon!");
         setTimeout(() => {
           document.getElementById('status').style.display = 'none';
         }, 3000);
@@ -386,7 +558,7 @@
           (err) => {
             console.error("Geolocation error:", err.message);
             document.getElementById('status').textContent = "Location error. Using default.";
-            userLocation = L.latLng(26.8467, 80.9462);
+            userLocation = L.latLng(20.5937, 78.9629);
             if (marker) map.removeLayer(marker);
             marker = L.marker(userLocation, { icon: sosIcon })
               .addTo(map)
@@ -396,7 +568,7 @@
         );
       } else {
         alert("Geolocation not supported.");
-        userLocation = L.latLng(26.8467, 80.9462);
+        userLocation = L.latLng(20.5937, 78.9629);
       }
     }
 
@@ -417,7 +589,7 @@
                 waypoints: [userLocation, L.latLng(lat, lon)],
                 routeWhileDragging: false,
                 addWaypoints: false,
-                lineOptions: { styles: [{ color: '#ffff00', weight: 6, opacity: 0.8 }] } // Bright yellow, thicker line
+                lineOptions: { styles: [{ color: '#ffff00', weight: 6, opacity: 0.8 }] }
               }).addTo(map);
               document.getElementById('directions').style.display = 'block';
               document.getElementById('directions').textContent = `Directions: Follow the yellow route to ${query}.`;
@@ -440,7 +612,7 @@
         waypoints: [userLocation, L.latLng(lat, lng)],
         routeWhileDragging: false,
         addWaypoints: false,
-        lineOptions: { styles: [{ color: '#ffff00', weight: 6, opacity: 0.8 }] } // Bright yellow, thicker line
+        lineOptions: { styles: [{ color: '#ffff00', weight: 6, opacity: 0.8 }] }
       }).addTo(map);
       document.getElementById('directions').style.display = 'block';
       document.getElementById('directions').textContent = `Directions: Follow the yellow route to the Quell Zone.`;
@@ -469,7 +641,7 @@
                 if (marker) map.removeLayer(marker);
                 marker = L.marker(userLocation, { icon: sosIcon })
                   .addTo(map)
-                  .bindPopup("<b>Live Location</b>")
+                  .bindPopup("<b>’apprLive Location</b>")
                   .openPopup();
               },
               (err) => console.error("Tracking error:", err.message)
@@ -509,7 +681,7 @@
       window.location.href = mailtoLink;
     }
 
-    // Call Emergency (Simulated)
+    // Call Emergency
     function callEmergency() {
       alert("Calling emergency services... (Simulated)\nUse: 112 (India) or local emergency number.");
     }

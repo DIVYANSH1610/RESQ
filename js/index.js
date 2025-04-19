@@ -54,3 +54,34 @@ displayNextUpdate();
 
 // Rotate updates every 5 seconds
 setInterval(displayNextUpdate, 5000);
+
+function showEmergencyPopup() {
+    const modal = document.getElementById('emergencyPopup');
+    modal.style.display = 'flex';
+    modal.querySelector('.modal-content').focus();
+}
+
+function hideEmergencyPopup() {
+    const modal = document.getElementById('emergencyPopup');
+    modal.style.display = 'none';
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        hideEmergencyPopup();
+    }
+});
+
+// Existing card hover effect (if any, merge with your current index.js)
+document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+        const info = card.getAttribute('data-info');
+        if (info) {
+            document.getElementById('update-text').textContent = info;
+        }
+    });
+    card.addEventListener('mouseleave', () => {
+        document.getElementById('update-text').textContent = 'Stay informed with the latest disaster alerts and updates.';
+    });
+});
