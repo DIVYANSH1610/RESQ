@@ -14,8 +14,8 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            /* background: linear-gradient(120deg, #1a73e8, #d32f2f); */
-            background-size: 200% 100%;
+            background: linear-gradient(135deg, #1a73e8, #d32f2f);
+            background-size: 200% 200%;
             animation: gradientWave 50s ease infinite;
             display: flex;
             flex-direction: column;
@@ -125,8 +125,7 @@
             flex-direction: column;
             margin-top: 80px;
             align-self: center;
-          height: 600px;
-         
+            height: 600px;
         }
 
         .chat-header {
@@ -155,7 +154,6 @@
             border-top-right-radius: 16px;
             border-top-left-radius: 16px;
             margin-top: -10px;
-            
         }
 
         .chat-message {
@@ -241,7 +239,7 @@
         #send-btn {
             padding: 12px 20px;
             border: none;
-            background:#1a73e8;
+            background: #1a73e8;
             color: white;
             border-radius: 8px;
             margin-left: 10px;
@@ -320,7 +318,7 @@
 
         function addMessage(content, isUser) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = chat-message ${isUser ? 'user-message' : 'bot-message'};
+            messageDiv.className = `chat-message ${isUser ? 'user-message' : 'bot-message'}`;
             const messageContent = document.createElement('div');
             messageContent.className = 'message-content';
             if (isUser) {
@@ -340,7 +338,7 @@
                 window.location.href = '/RESQ/index.html';
             }
              else {
-                console.log(Action not implemented: ${action});
+                console.log(`Action not implemented: ${action}`);
             }
         }
 
@@ -352,7 +350,7 @@
             userInput.value = '';
 
             try {
-                const response = await fetch(https://resq-ziw9.onrender.com/get?msg=${encodeURIComponent(message)}, {
+                const response = await fetch(`https://resq-ziw9.onrender.com/get?msg=${encodeURIComponent(message)}`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
