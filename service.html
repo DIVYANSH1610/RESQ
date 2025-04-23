@@ -14,15 +14,16 @@
     }
 
     body {
-      background-color: #f8f9fa;
+      background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
       color: #333;
     }
+
     .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 20px 50px;
-      background: rgba(68, 43, 91, 0.4);
+      background-color: #7494ec; /* Set navbar color to #7494ec */
     }
 
     .logo {
@@ -48,10 +49,6 @@
       color: #00b4d8;
     }
 
-    .nav-links.active {
-      display: flex;
-    }
-
     .content-wrapper {
       transition: filter 0.3s ease;
     }
@@ -67,7 +64,7 @@
     }
 
     h1 {
-      color: #d93025;
+      color: #7494ec; /* Set header color to match navbar */
     }
 
     .section {
@@ -102,7 +99,7 @@
     .volunteer-btn, .donate-btn {
       display: inline-block;
       margin-top: 20px;
-      background-color: #d93025;
+      background-color: #7494ec; /* Set buttons color to #7494ec */
       color: white;
       padding: 12px 24px;
       border: none;
@@ -154,7 +151,7 @@
 
     .modal-content h3 {
       margin-bottom: 20px;
-      color: #d93025;
+      color: #7494ec; /* Header inside modal matches navbar */
     }
 
     .modal-content label {
@@ -171,7 +168,7 @@
     }
 
     .modal-content button {
-      background-color: #28a745;
+      background-color: #7494ec; /* Button color inside modal matches navbar */
       color: white;
       padding: 10px 20px;
       border: none;
@@ -264,8 +261,8 @@
       <p>Your donations directly fund emergency supplies, shelter, food, and first-aid kits for disaster victims.</p>
 
       <div class="donation-links">
-        <a class="donate-btn" href="upi://pay?pa=resq@upi&pn=RESQ%20Relief&cu=INR" target="_blank">Donate via UPI</a>
-        <a class="donate-btn" href="https://www.paypal.com/donate?hosted_button_id=EXAMPLE123" target="_blank">Donate via PayPal</a>
+        <a class="donate-btn" href="upi://pay?pa=donate@upi&pn=Charity+Foundation&cu=INR" target="_blank">Donate via UPI</a>
+        <a class="donate-btn" href="https://www.paypal.com/donate?business=your-paypal-email&item_name=Donation+Purpose&currency_code=USD" target="_blank">Donate via PayPal</a>
       </div>
 
       <div class="donation-images">
