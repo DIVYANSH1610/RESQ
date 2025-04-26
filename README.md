@@ -1,6 +1,8 @@
+![github-submission-banner](https://github.com/user-attachments/assets/a1493b84-e4e2-456e-a791-ce35ee2bcf2f)
+
 🚀 RESQ
 
-> AI-Powered Relief at the Speed of Crisis
+> AI-Powered Relief at the Speed of Crisis, where every second counts.
 
 
 
@@ -96,7 +98,7 @@ Sponsor Technologies Used:
 
 Demo Video Link: https://drive.google.com/file/d/12_gPt20FFl2jcNe4GN2l26KXV5fCDZOm/view?usp=drivesdk
 
-Pitch Deck / PPT Link: https://drive.google.com/file/d/12Szb6DVLLn0d45JXa-c-KRlvQFyGWlSF/view?usp=drivesdk
+Pitch Deck / PPT Link: https://drive.google.com/file/d/1bddkECqG5Bnlbx5Qhe_a3AmptDqyen3y/view?usp=drivesdk
 
 MVP (Working Prototype):
 
