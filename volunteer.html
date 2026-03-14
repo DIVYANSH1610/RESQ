@@ -3,136 +3,722 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Disaster Volunteer Dashboard</title>
-  <link rel="stylesheet" href="css/volunteer.css"/>
+  <title>RESQ — Volunteer Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --red: #E8321A; --red-dark: #B52411; --red-glow: rgba(232,50,26,0.18);
+      --navy: #0A0F1E; --navy-mid: #111827; --navy-light: #1C2436; --navy-card: #141C2E;
+      --white: #F4F1EC; --muted: rgba(244,241,236,0.5); --muted-hi: rgba(244,241,236,0.75);
+      --border: rgba(244,241,236,0.08); --border-hi: rgba(244,241,236,0.18);
+      --gold: #F5C842; --gold-dim: rgba(245,200,66,0.12);
+      --green: #22c55e; --green-dim: rgba(34,197,94,0.12);
+      --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.12);
+      --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12);
+      --sidebar-w: 240px;
+      --ease: cubic-bezier(0.22,1,0.36,1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy); color: var(--white);
+      display: flex; min-height: 100vh; overflow-x: hidden;
+      animation: pageIn 0.4s ease both;
+    }
+    @keyframes pageIn { from { opacity:0; } to { opacity:1; } }
+    ::selection { background: rgba(232,50,26,0.3); color: #F4F1EC; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(232,50,26,0.25); border-radius: 3px; }
+
+    /* ══════════════════════════════
+       SIDEBAR
+    ══════════════════════════════ */
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--navy-mid);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 200;
+      transition: transform 0.35s var(--ease);
+    }
+
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 12px;
+      padding: 1.4rem 1.5rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none; flex-shrink: 0;
+    }
+    .sidebar-brand .s-logo { height: 38px; border-radius: 6px; object-fit: contain; transition: transform 0.3s var(--ease); }
+    .sidebar-brand:hover .s-logo { transform: scale(1.07); }
+    .sidebar-brand .s-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.06em; color: var(--white); }
+    .sidebar-brand .s-name span { color: var(--red); }
+
+    .sidebar-section-label {
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 1.2rem 1.5rem 0.5rem;
+    }
+
+    .sidebar-menu { list-style: none; flex: 1; padding: 0.4rem 0.75rem; overflow-y: auto; }
+    .sidebar-menu li { margin-bottom: 2px; }
+    .sidebar-menu a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 9px;
+      text-decoration: none; color: var(--muted); font-size: 0.88rem; font-weight: 500;
+      transition: background 0.2s, color 0.2s, transform 0.22s var(--ease);
+      position: relative;
+    }
+    .sidebar-menu a i { width: 18px; text-align: center; font-size: 0.95rem; flex-shrink: 0; }
+    .sidebar-menu a:hover { background: rgba(255,255,255,0.05); color: var(--white); transform: translateX(3px); }
+    .sidebar-menu li.active a {
+      background: var(--red-glow); color: var(--white);
+      border: 1px solid rgba(232,50,26,0.2);
+    }
+    .sidebar-menu li.active a i { color: var(--red); }
+    .sidebar-menu li.active a::before {
+      content: ''; position: absolute; left: -3px; top: 50%; transform: translateY(-50%);
+      width: 3px; height: 60%; background: var(--red); border-radius: 0 3px 3px 0;
+    }
+
+    .sidebar-bottom {
+      padding: 0.75rem; border-top: 1px solid var(--border);
+    }
+    .sidebar-bottom a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 9px;
+      text-decoration: none; color: var(--muted); font-size: 0.88rem; font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+    }
+    .sidebar-bottom a:hover { background: rgba(232,50,26,0.1); color: #FF7A63; }
+    .sidebar-bottom a i { width: 18px; text-align: center; }
+
+    /* volunteer pill */
+    .vol-pill {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0.9rem 1rem; margin: 0 0.75rem 0.75rem;
+      background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);
+      border-radius: 10px;
+    }
+    .vol-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, #2A3A1E, #1E2D14);
+      border: 2px solid var(--green); display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; color: var(--green); flex-shrink: 0;
+    }
+    .vol-name { font-size: 0.82rem; font-weight: 600; color: var(--white); }
+    .vol-status { font-size: 0.68rem; color: var(--green); display: flex; align-items: center; gap: 4px; }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: blink 1.4s infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+    /* ══════════════════════════════
+       MAIN CONTENT
+    ══════════════════════════════ */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1; display: flex; flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 64px;
+      background: rgba(10,15,30,0.9); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s;
+    }
+    .topbar.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+    .topbar-left h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.05em; }
+    .topbar-left span { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--navy-light); border: 1px solid var(--border);
+      border-radius: 8px; padding: 7px 12px;
+      transition: border-color 0.22s, box-shadow 0.22s;
+    }
+    .search-box:focus-within { border-color: rgba(232,50,26,0.4); box-shadow: 0 0 0 3px rgba(232,50,26,0.08); }
+    .search-box input { background: none; border: none; outline: none; font-family: 'DM Sans',sans-serif; font-size: 0.84rem; color: var(--white); width: 160px; }
+    .search-box input::placeholder { color: var(--muted); }
+    .search-box i { color: var(--muted); font-size: 0.85rem; }
+
+    .notif-btn {
+      position: relative; width: 36px; height: 36px; border-radius: 8px;
+      background: var(--navy-light); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--muted); font-size: 0.95rem;
+      transition: background 0.2s, color 0.2s, transform 0.22s var(--ease);
+    }
+    .notif-btn:hover { background: var(--red-glow); color: var(--white); border-color: rgba(232,50,26,0.25); transform: scale(1.08); }
+    .notif-dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; background: var(--red); border-radius: 50%; border: 2px solid var(--navy-mid); animation: blink 1.4s infinite; }
+
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red-dark), #8B1A0E);
+      border: 2px solid rgba(232,50,26,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.82rem; font-weight: 700; cursor: pointer;
+      transition: transform 0.22s var(--ease), box-shadow 0.22s;
+    }
+    .user-avatar:hover { transform: scale(1.1); box-shadow: 0 0 0 3px rgba(232,50,26,0.25); }
+
+    /* CONTENT */
+    .content { padding: 2rem; flex: 1; }
+
+    /* REVEAL */
+    .reveal { opacity:0; transform:translateY(20px); transition: opacity 0.55s var(--ease), transform 0.55s var(--ease); }
+    .reveal.on { opacity:1; transform:none; }
+    .rd1{transition-delay:.05s} .rd2{transition-delay:.1s} .rd3{transition-delay:.15s}
+    .rd4{transition-delay:.2s} .rd5{transition-delay:.25s} .rd6{transition-delay:.3s}
+
+    /* STAT CARDS */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card {
+      background: var(--navy-card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.2rem 1.3rem; position: relative; overflow: hidden;
+      transition: transform 0.28s var(--ease), border-color 0.28s, box-shadow 0.28s;
+    }
+    .stat-card::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:var(--accent,var(--red)); }
+    .stat-card:hover { transform: translateY(-4px); border-color: var(--border-hi); box-shadow: 0 16px 36px rgba(0,0,0,0.35); }
+    .stat-icon { width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:.8rem; background:var(--icon-bg,var(--red-glow)); border:1px solid var(--icon-border,rgba(232,50,26,0.2)); transition: transform 0.28s var(--ease); }
+    .stat-card:hover .stat-icon { transform: scale(1.12) rotate(-4deg); }
+    .stat-value { font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;color:var(--accent,var(--red));margin-bottom:.2rem; }
+    .stat-label { font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em; }
+    .stat-change { font-size:.75rem;margin-top:.5rem;display:flex;align-items:center;gap:4px; }
+    .stat-change.up { color:var(--green); }
+    .stat-change.neutral { color:var(--muted); }
+
+    /* SECTION TITLE */
+    .sec-title { display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem; }
+    .sec-title h3 { font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.05em; }
+    .sec-title .badge-new { background:var(--red);color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:20px;margin-left:8px; }
+    .sec-link { font-size:.78rem;color:var(--muted);text-decoration:none;transition:color .2s; }
+    .sec-link:hover { color:var(--white); }
+
+    /* GRID LAYOUT */
+    .grid-2 { display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem; }
+    .grid-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;margin-bottom:1.5rem; }
+    .grid-main-side { display:grid;grid-template-columns:1fr 340px;gap:1.25rem;margin-bottom:1.5rem; }
+
+    /* CARD */
+    .card {
+      background:var(--navy-card);border:1px solid var(--border);border-radius:12px;padding:1.3rem;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .card:hover { border-color:var(--border-hi);box-shadow:0 6px 24px rgba(0,0,0,0.25); }
+
+    /* BADGES */
+    .badges-wrap { display:flex;flex-wrap:wrap;gap:.65rem;margin:1rem 0; }
+    .badge-pill {
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 14px;border-radius:50px;font-size:.78rem;font-weight:600;
+      transition: transform .22s var(--ease), box-shadow .22s;
+      cursor:default;
+    }
+    .badge-pill:hover { transform:translateY(-3px); }
+    .badge-pill.gold { background:var(--gold-dim);border:1px solid rgba(245,200,66,.3);color:var(--gold); }
+    .badge-pill.gold:hover { box-shadow:0 8px 20px rgba(245,200,66,.15); }
+    .badge-pill.red { background:var(--red-glow);border:1px solid rgba(232,50,26,.25);color:#FF7A63; }
+    .badge-pill.red:hover { box-shadow:0 8px 20px rgba(232,50,26,.2); }
+    .badge-pill.blue { background:var(--blue-dim);border:1px solid rgba(96,165,250,.25);color:var(--blue); }
+    .badge-pill.blue:hover { box-shadow:0 8px 20px rgba(96,165,250,.15); }
+    .badge-pill i { font-size:.85rem; }
+    .upcoming-badge { display:inline-flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);padding:.5rem 0; }
+    .upcoming-badge i { color:var(--amber); }
+
+    /* TASKS */
+    .task-list { list-style:none;display:flex;flex-direction:column;gap:.55rem; }
+    .task-item {
+      display:flex;align-items:center;gap:12px;padding:.8rem 1rem;
+      background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;
+      transition:background .2s,border-color .2s,transform .22s var(--ease);
+    }
+    .task-item:hover { background:rgba(255,255,255,.06);border-color:var(--border-hi);transform:translateX(4px); }
+    .task-check { width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border);flex-shrink:0; display:flex;align-items:center;justify-content:center;font-size:.65rem; }
+    .task-check.done { background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green); }
+    .task-check.prog { background:var(--blue-dim);border-color:rgba(96,165,250,.3);color:var(--blue); }
+    .task-check.pend { background:var(--amber-dim);border-color:rgba(245,158,11,.3);color:var(--amber); }
+    .task-text { flex:1;font-size:.86rem; }
+    .task-status { font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px; }
+    .task-status.done { background:var(--green-dim);color:var(--green); }
+    .task-status.prog { background:var(--blue-dim);color:var(--blue); }
+    .task-status.pend { background:var(--amber-dim);color:var(--amber); }
+
+    /* EVENTS */
+    .event-list { display:flex;flex-direction:column;gap:.55rem; }
+    .event-item {
+      display:flex;align-items:center;gap:12px;padding:.8rem 1rem;
+      background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;
+      transition:background .2s,border-color .2s,transform .22s var(--ease);
+    }
+    .event-item:hover { background:rgba(255,255,255,.06);border-color:var(--border-hi);transform:translateX(4px); }
+    .event-date-badge {
+      width:42px;height:42px;border-radius:8px;background:var(--red-glow);
+      border:1px solid rgba(232,50,26,.2);display:flex;flex-direction:column;
+      align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .event-date-badge .eday { font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--red);line-height:1; }
+    .event-date-badge .emon { font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em; }
+    .event-info { flex:1; }
+    .event-name { font-size:.86rem;font-weight:600; }
+    .event-type { font-size:.72rem;color:var(--muted); }
+    .btn-rsvp {
+      padding:5px 12px;border-radius:7px;border:1px solid rgba(232,50,26,.3);
+      background:transparent;color:#FF7A63;font-family:'DM Sans',sans-serif;
+      font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;
+      transition:background .2s,transform .22s var(--ease);
+    }
+    .btn-rsvp:hover { background:var(--red-glow);transform:scale(1.05); }
+
+    /* LEADERBOARD */
+    .lb-list { display:flex;flex-direction:column;gap:.5rem; }
+    .lb-item {
+      display:flex;align-items:center;gap:10px;padding:.7rem .9rem;
+      background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;
+      transition:background .2s,border-color .2s;
+    }
+    .lb-item:hover { background:rgba(255,255,255,.06);border-color:var(--border-hi); }
+    .lb-item.you { background:var(--red-glow);border-color:rgba(232,50,26,.2); }
+    .lb-rank { font-family:'Bebas Neue',sans-serif;font-size:1.1rem;width:24px;text-align:center;flex-shrink:0; }
+    .lb-rank.gold { color:var(--gold); }
+    .lb-rank.silver { color:#b0b8c8; }
+    .lb-rank.bronze { color:#c87941; }
+    .lb-rank.you-r { color:var(--red); }
+    .lb-name { flex:1;font-size:.86rem;font-weight:500; }
+    .lb-hrs { font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--muted); }
+    .lb-bar { height:3px;background:var(--border);border-radius:2px;margin-top:4px; }
+    .lb-bar-fill { height:100%;border-radius:2px;background:var(--red);transition:width 1.2s var(--ease); }
+
+    /* CHART */
+    .chart-wrap { position:relative;height:200px; }
+
+    /* MESSAGES */
+    .msg-list { display:flex;flex-direction:column;gap:.55rem; }
+    .msg-item {
+      display:flex;align-items:flex-start;gap:10px;padding:.8rem 1rem;
+      background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;
+      transition:background .2s;
+    }
+    .msg-item:hover { background:rgba(255,255,255,.06); }
+    .msg-icon { width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0; }
+    .msg-icon.alert { background:var(--red-glow);color:#FF7A63;border:1px solid rgba(232,50,26,.2); }
+    .msg-icon.info { background:var(--blue-dim);color:var(--blue);border:1px solid rgba(96,165,250,.2); }
+    .msg-text { font-size:.82rem;color:var(--muted-hi);line-height:1.5;flex:1; }
+    .msg-text strong { color:var(--white); }
+    .msg-time { font-size:.7rem;color:var(--muted);flex-shrink:0;margin-top:2px; }
+
+    /* CERT BUTTONS */
+    .cert-row { display:flex;gap:.75rem;flex-wrap:wrap; }
+    .btn-cert {
+      display:inline-flex;align-items:center;gap:7px;padding:10px 16px;
+      border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;
+      letter-spacing:.04em;text-transform:uppercase;cursor:pointer;
+      transition:background .2s,border-color .2s,transform .22s var(--ease),box-shadow .22s;
+    }
+    .btn-cert.primary { background:var(--red);color:#fff;border:none; }
+    .btn-cert.primary:hover { background:var(--red-dark);transform:translateY(-2px);box-shadow:0 8px 20px rgba(232,50,26,.3); }
+    .btn-cert.outline { background:transparent;color:var(--white);border:1px solid var(--border); }
+    .btn-cert.outline:hover { background:rgba(255,255,255,.06);border-color:var(--border-hi);transform:translateY(-2px); }
+    .btn-cert.gold { background:var(--gold);color:#1A1300;border:none; }
+    .btn-cert.gold:hover { opacity:.9;transform:translateY(-2px);box-shadow:0 8px 20px rgba(245,200,66,.25); }
+
+    /* QPOINTS CARD */
+    .qp-banner {
+      background:linear-gradient(135deg,#15110A,#231A05 60%,#1A1506);
+      border:1px solid rgba(245,200,66,.3);border-radius:12px;padding:1.4rem;
+      position:relative;overflow:hidden;margin-bottom:1.25rem;
+      transition:border-color .3s,box-shadow .3s;
+    }
+    .qp-banner:hover { border-color:rgba(245,200,66,.5);box-shadow:0 16px 40px rgba(0,0,0,.4); }
+    .qp-banner::before { content:'Q';position:absolute;right:-8px;top:-18px;font-family:'Bebas Neue',sans-serif;font-size:8rem;color:rgba(245,200,66,.06);line-height:1;pointer-events:none; }
+    .qp-label { font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem; }
+    .qp-val { font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--gold);line-height:1;margin-bottom:.2rem; }
+    .qp-sub { font-size:.78rem;color:var(--muted);margin-bottom:1rem; }
+    .qp-bar-wrap { background:rgba(245,200,66,.1);border-radius:4px;height:6px;margin-bottom:.5rem;overflow:hidden; }
+    .qp-bar { height:100%;background:var(--gold);border-radius:4px;width:0;transition:width 1.4s var(--ease); }
+    .qp-bar-label { display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted); }
+
+    /* FOOTER */
+    .dash-footer { border-top:1px solid var(--border);padding:1.2rem 2rem;text-align:center;font-size:.75rem;color:var(--muted);margin-top:auto; }
+    .dash-footer span { color:var(--red); }
+
+    /* MOBILE SIDEBAR TOGGLE */
+    .mob-toggle {
+      display:none;position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;
+      width:48px;height:48px;background:var(--red);border:none;border-radius:12px;
+      color:#fff;font-size:1.1rem;cursor:pointer;
+      box-shadow:0 8px 24px rgba(232,50,26,.4);
+      transition:transform .22s var(--ease),box-shadow .22s;
+    }
+    .mob-toggle:hover { transform:scale(1.08);box-shadow:0 12px 32px rgba(232,50,26,.5); }
+
+    /* RESPONSIVE */
+    @media(max-width:1100px) {
+      .stats-row { grid-template-columns:1fr 1fr; }
+      .grid-3 { grid-template-columns:1fr 1fr; }
+      .grid-main-side { grid-template-columns:1fr; }
+    }
+    @media(max-width:768px) {
+      :root { --sidebar-w: 240px; }
+      .sidebar { transform:translateX(-100%); }
+      .sidebar.open { transform:translateX(0); }
+      .main { margin-left:0; }
+      .mob-toggle { display:flex;align-items:center;justify-content:center; }
+      .grid-2 { grid-template-columns:1fr; }
+      .stats-row { grid-template-columns:1fr 1fr; }
+      .topbar { padding:0 1.2rem; }
+      .content { padding:1.2rem; }
+      .search-box { display:none; }
+    }
+    @media(max-width:480px) {
+      .stats-row { grid-template-columns:1fr; }
+    }
+  </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="logo"></div>
-    <ul class="menu">
-      <h2>VOLUNTEER</h2>
-      <li class="active">
-        <a href="#"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-      </li>
-      <li>
-        <a href="#"><i class="fas fa-user"></i><span>User</span></a>
-      </li>
-      <li>
-        <a href="#"><i class="fas fa-chart-bar"></i><span>Activity</span></a>
-      </li>
-      <li>
-        <a href="#"><i class="fas fa-briefcase"></i><span>Help</span></a>
-      </li>
-      <li>
-        <a href="#"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
-      </li>
-      <li>
-        <a href="#"><i class="fas fa-star"></i><span>Testimonials</span></a>
-      </li>
-      <li>
-        <a href="#"><i class="fas fa-cog"></i><span>Settings</span></a>
-      </li>
-      <li class="logout">
-        <a href="#"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
-      </li>
-    </ul>
-  </div>
 
-  <!-- Main Content -->
-  <div class="main--content">
-    <div class="header--wrapper">
-      <div class="header--title">
-        <span>Primary</span>
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <a href="index.html" class="sidebar-brand">
+      <img src="./images/RESQ.jpg" alt="RESQ" class="s-logo">
+      <span class="s-name">RES<span>Q</span></span>
+    </a>
+
+    <div class="vol-pill">
+      <div class="vol-avatar">YO</div>
+      <div>
+        <div class="vol-name">You</div>
+        <div class="vol-status"><span class="status-dot"></span>Active Volunteer</div>
+      </div>
+    </div>
+
+    <span class="sidebar-section-label">Main</span>
+    <ul class="sidebar-menu">
+      <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+      <li><a href="#"><i class="fas fa-user"></i><span>Profile</span></a></li>
+      <li><a href="#"><i class="fas fa-chart-bar"></i><span>Activity</span></a></li>
+      <li><a href="#"><i class="fas fa-map-marked-alt"></i><span>Quell Zones</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Support</span>
+    <ul class="sidebar-menu">
+      <li><a href="#"><i class="fas fa-briefcase"></i><span>Help Center</span></a></li>
+      <li><a href="#"><i class="fas fa-question-circle"></i><span>FAQ</span></a></li>
+      <li><a href="#"><i class="fas fa-star"></i><span>Testimonials</span></a></li>
+      <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+    </ul>
+
+    <div class="sidebar-bottom">
+      <a href="index.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar" id="topbar">
+      <div class="topbar-left">
+        <span>Volunteer</span>
         <h2>Dashboard</h2>
       </div>
-      <div class="user--info">
-        <div class="search--box">
+      <div class="topbar-right">
+        <div class="search-box">
           <i class="fas fa-search"></i>
-          <input type="text" placeholder="Search"/>
+          <input type="text" placeholder="Search…">
         </div>
-        <img src="./images/icon.jpg" alt="User Icon"/>
+        <button class="notif-btn" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="user-avatar" title="Your profile">YO</div>
       </div>
     </div>
 
-    <section class="badges-section">
-      <h2>Badges & Achievements</h2>
-      <div class="badges">
-        <div class="badge">50 Hours Disaster Relief</div>
-        <div class="badge">Flood Rescue Hero</div>
-        <div class="badge">Emergency First-Aider</div>
-      </div>
-      <p class="upcoming">Upcoming: 100 Hours Crisis Service</p>
-    </section>
+    <!-- CONTENT -->
+    <div class="content">
 
-    <div class="manage">
-      <section class="task-management">
-        <h2>Your Tasks <sup class="new">New</sup></h2>
-        <ul>
-          <li>Inventory check - <span>In Progress</span></li>
-          <li>Team safety briefing - <span>Completed</span></li>
-          <li>Relief material sorting - <span>Pending</span></li>
-        </ul>
-      </section>
-
-      <section class="event-calendar">
-        <h2>Upcoming Events <sup class="new">New</sup></h2>
-        <ul>
-          <li>Apr 25: Cyclone Response Drill <button>RSVP</button></li>
-          <li>May 5: Earthquake Prep Workshop <button>RSVP</button></li>
-        </ul>
-      </section>
-
-      <section class="leaderboard">
-        <h2>Top Volunteers</h2>
-        <ol>
-          <li>Neha - 120 hrs</li>
-          <li>Ravi - 98 hrs</li>
-          <li>You - 82 hrs</li>
-        </ol>
-      </section>
-
-      <section class="communication-tools">
-        <h2>Messages & Updates</h2>
-        <p>New safety protocol PDF shared on April 20.</p>
-      </section>
-
-      <div class="chart-container">
-        <h3>2024 Hours by Category</h3>
-        <canvas id="donutChart"></canvas>
+      <!-- STAT CARDS -->
+      <div class="stats-row">
+        <div class="stat-card reveal rd1" style="--accent:var(--red);--icon-bg:var(--red-glow);--icon-border:rgba(232,50,26,.2)">
+          <div class="stat-icon"><i class="fas fa-clock"></i></div>
+          <div class="stat-value" data-count="82">82</div>
+          <div class="stat-label">Hours Volunteered</div>
+          <div class="stat-change up"><i class="fas fa-arrow-up"></i> +12 this month</div>
+        </div>
+        <div class="stat-card reveal rd2" style="--accent:var(--gold);--icon-bg:var(--gold-dim);--icon-border:rgba(245,200,66,.2)">
+          <div class="stat-icon" style="color:var(--gold)"><i class="fas fa-star"></i></div>
+          <div class="stat-value" style="color:var(--gold)" data-count="1240">1240</div>
+          <div class="stat-label">Qpoints Earned</div>
+          <div class="stat-change up"><i class="fas fa-arrow-up"></i> +200 this week</div>
+        </div>
+        <div class="stat-card reveal rd3" style="--accent:var(--green);--icon-bg:var(--green-dim);--icon-border:rgba(34,197,94,.2)">
+          <div class="stat-icon" style="color:var(--green)"><i class="fas fa-hands-helping"></i></div>
+          <div class="stat-value" style="color:var(--green)" data-count="14">14</div>
+          <div class="stat-label">Missions Completed</div>
+          <div class="stat-change up"><i class="fas fa-arrow-up"></i> +2 this month</div>
+        </div>
+        <div class="stat-card reveal rd4" style="--accent:var(--blue);--icon-bg:var(--blue-dim);--icon-border:rgba(96,165,250,.2)">
+          <div class="stat-icon" style="color:var(--blue)"><i class="fas fa-users"></i></div>
+          <div class="stat-value" style="color:var(--blue)" data-count="37">37</div>
+          <div class="stat-label">People Assisted</div>
+          <div class="stat-change neutral"><i class="fas fa-minus"></i> Lifetime total</div>
+        </div>
       </div>
 
-      <section class="reports-certificates">
-        <h2>Reports & Certificates</h2>
-        <button>Download Report</button>
-        <button>Get Certificate</button>
-      </section>
-    </div>
-  </div>
+      <!-- BADGES & QPOINTS -->
+      <div class="grid-main-side">
+        <div>
 
-  <!-- Chart JS -->
+          <!-- BADGES -->
+          <div class="card reveal rd1" style="margin-bottom:1.25rem">
+            <div class="sec-title">
+              <h3>Badges & <span style="color:var(--gold)">Achievements</span></h3>
+              <a href="#" class="sec-link">View all →</a>
+            </div>
+            <div class="badges-wrap">
+              <div class="badge-pill gold"><i class="fas fa-medal"></i> 50 Hours Relief</div>
+              <div class="badge-pill red"><i class="fas fa-water"></i> Flood Rescue Hero</div>
+              <div class="badge-pill blue"><i class="fas fa-first-aid"></i> Emergency First-Aider</div>
+              <div class="badge-pill gold"><i class="fas fa-shield-alt"></i> Quick Responder</div>
+            </div>
+            <div class="upcoming-badge"><i class="fas fa-lock"></i> Upcoming: 100 Hours Crisis Service — <strong style="color:var(--white);margin-left:4px">18 hrs to go</strong></div>
+          </div>
+
+          <!-- TASKS -->
+          <div class="card reveal rd2" style="margin-bottom:1.25rem">
+            <div class="sec-title">
+              <h3>Your Tasks <span class="badge-new">New</span></h3>
+              <a href="#" class="sec-link">Manage →</a>
+            </div>
+            <ul class="task-list">
+              <li class="task-item">
+                <div class="task-check prog"><i class="fas fa-spinner"></i></div>
+                <span class="task-text">Inventory check — Zone C warehouse</span>
+                <span class="task-status prog">In Progress</span>
+              </li>
+              <li class="task-item">
+                <div class="task-check done"><i class="fas fa-check"></i></div>
+                <span class="task-text">Team safety briefing — April 18</span>
+                <span class="task-status done">Completed</span>
+              </li>
+              <li class="task-item">
+                <div class="task-check pend"><i class="fas fa-clock"></i></div>
+                <span class="task-text">Relief material sorting — District D</span>
+                <span class="task-status pend">Pending</span>
+              </li>
+              <li class="task-item">
+                <div class="task-check pend"><i class="fas fa-clock"></i></div>
+                <span class="task-text">Submit post-mission report — Mission #14</span>
+                <span class="task-status pend">Pending</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- CHART + REPORTS ROW -->
+          <div class="grid-2">
+            <div class="card reveal rd3">
+              <div class="sec-title"><h3>2024 Hours by Category</h3></div>
+              <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
+            </div>
+            <div class="card reveal rd4">
+              <div class="sec-title"><h3>Reports & <span style="color:var(--red)">Certificates</span></h3></div>
+              <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;line-height:1.65;">Download your service report or generate a verified certificate to showcase your volunteer work.</p>
+              <div class="cert-row" style="flex-direction:column;gap:.6rem">
+                <button class="btn-cert primary"><i class="fas fa-download"></i> Download Report</button>
+                <button class="btn-cert gold"><i class="fas fa-certificate"></i> Get Certificate</button>
+                <button class="btn-cert outline"><i class="fas fa-share-alt"></i> Share Achievements</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR -->
+        <div>
+          <!-- QPOINTS -->
+          <div class="qp-banner reveal rd1">
+            <div class="qp-label">★ Volunteer Rewards</div>
+            <div class="qp-val" id="qpVal">1,240</div>
+            <div class="qp-sub">Qpoints — Rank #3 in your region</div>
+            <div class="qp-bar-wrap"><div class="qp-bar" id="qpBar" style="width:0"></div></div>
+            <div class="qp-bar-label"><span>0 QP</span><span>Next: 1,500 QP</span></div>
+            <div style="margin-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap">
+              <a href="service.html" class="btn-cert gold" style="font-size:.75rem;padding:8px 12px"><i class="fas fa-gift"></i> Redeem</a>
+              <a href="service.html" class="btn-cert outline" style="font-size:.75rem;padding:8px 12px"><i class="fas fa-plus"></i> Earn More</a>
+            </div>
+          </div>
+
+          <!-- LEADERBOARD -->
+          <div class="card reveal rd2" style="margin-bottom:1.25rem">
+            <div class="sec-title"><h3>Top Volunteers</h3><a href="#" class="sec-link">Full board →</a></div>
+            <div class="lb-list">
+              <div class="lb-item"><span class="lb-rank gold">1</span><span class="lb-name">Neha</span><span class="lb-hrs">120 hrs</span></div>
+              <div class="lb-item"><span class="lb-rank silver">2</span><span class="lb-name">Ravi</span><span class="lb-hrs">98 hrs</span></div>
+              <div class="lb-item you"><span class="lb-rank you-r">3</span><span class="lb-name">You ⚡</span><span class="lb-hrs">82 hrs</span></div>
+              <div class="lb-item"><span class="lb-rank">4</span><span class="lb-name">Priya</span><span class="lb-hrs">74 hrs</span></div>
+              <div class="lb-item"><span class="lb-rank">5</span><span class="lb-name">Arjun</span><span class="lb-hrs">61 hrs</span></div>
+            </div>
+          </div>
+
+          <!-- EVENTS -->
+          <div class="card reveal rd3" style="margin-bottom:1.25rem">
+            <div class="sec-title"><h3>Upcoming Events <span class="badge-new">New</span></h3></div>
+            <div class="event-list">
+              <div class="event-item">
+                <div class="event-date-badge"><div class="eday">25</div><div class="emon">Apr</div></div>
+                <div class="event-info"><div class="event-name">Cyclone Response Drill</div><div class="event-type">District B — Training</div></div>
+                <button class="btn-rsvp">RSVP</button>
+              </div>
+              <div class="event-item">
+                <div class="event-date-badge"><div class="eday">5</div><div class="emon">May</div></div>
+                <div class="event-info"><div class="event-name">Earthquake Prep Workshop</div><div class="event-type">HQ — Workshop</div></div>
+                <button class="btn-rsvp">RSVP</button>
+              </div>
+              <div class="event-item">
+                <div class="event-date-badge"><div class="eday">12</div><div class="emon">May</div></div>
+                <div class="event-info"><div class="event-name">First-Aid Refresher</div><div class="event-type">Online — Certification</div></div>
+                <button class="btn-rsvp">RSVP</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MESSAGES -->
+          <div class="card reveal rd4">
+            <div class="sec-title"><h3>Messages & Updates</h3></div>
+            <div class="msg-list">
+              <div class="msg-item">
+                <div class="msg-icon alert"><i class="fas fa-file-pdf"></i></div>
+                <div class="msg-text"><strong>New PDF shared</strong> — Safety protocol update for flood response teams.</div>
+                <div class="msg-time">Apr 20</div>
+              </div>
+              <div class="msg-item">
+                <div class="msg-icon info"><i class="fas fa-info-circle"></i></div>
+                <div class="msg-text"><strong>Mission #14 verified</strong> — Your hours have been credited.</div>
+                <div class="msg-time">Apr 18</div>
+              </div>
+              <div class="msg-item">
+                <div class="msg-icon alert"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="msg-text"><strong>Alert Zone C</strong> — Volunteers needed for flood sweep tomorrow 6am.</div>
+                <div class="msg-time">Apr 17</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- end content -->
+
+    <div class="dash-footer"><p>© 2025 <span>RESQ</span> Disaster Management Network. All rights reserved.</p></div>
+  </div><!-- end main -->
+
+  <button class="mob-toggle" id="mobToggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+    <i class="fas fa-bars"></i>
+  </button>
+
   <script>
+    // Topbar shadow on scroll
+    const topbar = document.getElementById('topbar');
+    const mainEl = document.querySelector('.main');
+    mainEl.addEventListener('scroll', () => topbar.classList.toggle('scrolled', mainEl.scrollTop > 20), { passive: true });
+
+    // Scroll reveal
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+    }, { threshold: 0.08, root: null });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Counter animation
+    function animateCount(el) {
+      const target = parseInt(el.dataset.count);
+      if (isNaN(target)) return;
+      const t0 = performance.now(), dur = 1200;
+      (function tick(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const e2 = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(e2 * target).toLocaleString();
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    }
+    const cio = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { animateCount(e.target); cio.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
+
+    // Qpoints bar animation
+    setTimeout(() => {
+      const bar = document.getElementById('qpBar');
+      if (bar) bar.style.width = ((1240/1500)*100).toFixed(1) + '%';
+    }, 600);
+
+    // Chart.js — themed to RESQ palette
     const ctx = document.getElementById('donutChart').getContext('2d');
-    const donutChart = new Chart(ctx, {
+    new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Rescue Ops', 'First Aid', 'Food Distribution', 'Shelter Setup', 'Logistics', 'Misc'],
+        labels: ['Rescue Ops','First Aid','Food Dist.','Shelter','Logistics','Misc'],
         datasets: [{
-          data: [30, 15, 20, 10, 15, 10],
-          backgroundColor: ['#c75c88', '#a685d4', '#5c50d4', '#d45078', '#648fd4', '#56b3c4'],
-          borderWidth: 2
+          data: [30,15,20,10,15,10],
+          backgroundColor: [
+            'rgba(232,50,26,0.8)',
+            'rgba(245,200,66,0.8)',
+            'rgba(34,197,94,0.7)',
+            'rgba(96,165,250,0.7)',
+            'rgba(245,158,11,0.7)',
+            'rgba(148,163,184,0.5)'
+          ],
+          borderColor: '#141C2E',
+          borderWidth: 2,
+          hoverOffset: 6
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: '68%',
         plugins: {
           legend: {
-            position: 'right'
+            position: 'right',
+            labels: {
+              color: 'rgba(244,241,236,0.6)',
+              font: { family: 'DM Sans', size: 11 },
+              boxWidth: 10, boxHeight: 10,
+              padding: 10
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1C2436',
+            borderColor: 'rgba(244,241,236,0.1)',
+            borderWidth: 1,
+            titleColor: '#F4F1EC',
+            bodyColor: 'rgba(244,241,236,0.6)',
+            cornerRadius: 8,
+            padding: 10
           }
         }
+      }
+    });
+
+    // Sidebar nav active
+    document.querySelectorAll('.sidebar-menu a').forEach(a => {
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+        this.closest('li').classList.add('active');
+      });
+    });
+
+    // Close sidebar on outside click (mobile)
+    document.addEventListener('click', e => {
+      const sidebar = document.getElementById('sidebar');
+      if (window.innerWidth <= 768 && sidebar.classList.contains('open') && !sidebar.contains(e.target) && !document.getElementById('mobToggle').contains(e.target)) {
+        sidebar.classList.remove('open');
       }
     });
   </script>
