@@ -1,79 +1,930 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disaster Management</title>
-    <link rel="stylesheet" href="./css/index.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RESQ — Disaster Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red: #E8321A;
+      --red-dark: #B52411;
+      --amber: #F5A623;
+      --navy: #0A0F1E;
+      --navy-mid: #111827;
+      --white: #F4F1EC;
+      --muted: rgba(244,241,236,0.55);
+      --border: rgba(244,241,236,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 68px;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      height: 42px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+
+    .brand-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.06em;
+      color: var(--white);
+    }
+
+    .brand-text span { color: var(--red); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--red);
+      transition: width 0.25s;
+    }
+
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-signin {
+      background: var(--red) !important;
+      color: var(--white) !important;
+      padding: 6px 16px;
+      border-radius: 6px;
+      transition: background 0.2s !important;
+    }
+
+    .nav-signin:hover { background: var(--red-dark) !important; }
+    .nav-signin::after { display: none !important; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      z-index: 200;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('./images/Homepage.JPEG') center center / cover no-repeat;
+      transform: scale(1.05);
+      animation: slowZoom 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes slowZoom {
+      from { transform: scale(1.05); }
+      to   { transform: scale(1.12); }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(10,15,30,0.92) 0%,
+        rgba(10,15,30,0.7) 50%,
+        rgba(232,50,26,0.18) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 0 1.5rem;
+      max-width: 780px;
+      animation: fadeUp 1s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(232,50,26,0.15);
+      border: 1px solid rgba(232,50,26,0.4);
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #FF7A63;
+      margin-bottom: 1.5rem;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(232,50,26,0.6); }
+      50%       { opacity: 0.9; transform: scale(1.2); box-shadow: 0 0 0 6px rgba(232,50,26,0); }
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.2rem, 10vw, 7rem);
+      line-height: 0.95;
+      letter-spacing: 0.03em;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-title .accent { color: var(--red); }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.18rem);
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 520px;
+      margin: 0 auto 2.2rem;
+      font-weight: 300;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 14px 32px;
+      background: var(--red);
+      color: var(--white);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
+
+    .btn-outline {
+      display: inline-block;
+      padding: 14px 32px;
+      background: transparent;
+      color: var(--white);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, border-color 0.2s;
+    }
+
+    .btn-outline:hover { background: rgba(255,255,255,0.07); border-color: rgba(244,241,236,0.3); transform: translateY(-2px); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      animation: fadeUp 1.5s 0.6s ease both;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+      animation: scrollAnim 1.6s infinite;
+    }
+
+    @keyframes scrollAnim {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ─── ALERT TICKER ─── */
+    .ticker-bar {
+      background: var(--red);
+      padding: 10px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-inner {
+      display: inline-flex;
+      animation: ticker 28s linear infinite;
+      gap: 0;
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 2.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .ticker-item::before {
+      content: '⚠';
+      font-size: 0.8rem;
+    }
+
+    .ticker-sep {
+      color: rgba(255,255,255,0.4);
+      padding: 0 0.5rem;
+    }
+
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── STATS ROW ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-cell {
+      background: var(--navy-mid);
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.6rem;
+      color: var(--red);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    /* ─── CARDS SECTION ─── */
+    .section {
+      padding: 5rem 2.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.05;
+      margin-bottom: 3rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--navy-mid);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.8rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--red);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(244,241,236,0.2);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .card:hover::before { transform: scaleX(1); }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(232,50,26,0.12);
+      border: 1px solid rgba(232,50,26,0.25);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.6rem;
+    }
+
+    .card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 0.7rem;
+    }
+
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.74rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+
+    .tag-danger {
+      background: rgba(232,50,26,0.15);
+      color: #FF7A63;
+      border: 1px solid rgba(232,50,26,0.3);
+    }
+
+    .tag-warning {
+      background: rgba(245,166,35,0.12);
+      color: var(--amber);
+      border: 1px solid rgba(245,166,35,0.3);
+    }
+
+    .tag-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Emergency Card */
+    .card-emergency {
+      background: linear-gradient(135deg, #1A0A0A 0%, #2A0D08 100%);
+      border-color: rgba(232,50,26,0.35);
+    }
+
+    .card-emergency h3 { color: var(--white); }
+
+    .emergency-numbers {
+      margin-top: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .emer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .emer-label { font-size: 0.8rem; color: var(--muted); }
+    .emer-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      color: var(--red);
+      letter-spacing: 0.1em;
+    }
+
+    .btn-emergency {
+      margin-top: 1.4rem;
+      width: 100%;
+      padding: 13px;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-emergency:hover { background: var(--red-dark); transform: translateY(-2px); }
+
+    /* ─── MODAL ─── */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.show { display: flex; animation: backdropIn 0.2s ease; }
+
+    @keyframes backdropIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .modal-box {
+      background: var(--navy-mid);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      position: relative;
+      animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.88) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .modal-close:hover { background: rgba(232,50,26,0.15); color: #FF7A63; }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.4rem;
+    }
+
+    .modal-icon {
+      width: 46px; height: 46px;
+      background: rgba(232,50,26,0.15);
+      border: 1px solid rgba(232,50,26,0.3);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .modal-box h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: 0.04em;
+    }
+
+    .modal-box h2 span { color: var(--red); }
+
+    .modal-desc {
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 1.4rem;
+    }
+
+    .modal-numbers {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .modal-row-label { font-size: 0.84rem; color: var(--muted); }
+    .modal-row-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      color: var(--red);
+      letter-spacing: 0.08em;
+    }
+
+    .modal-instructions {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-instructions p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    footer span { color: var(--red); }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 768px) {
+      .navbar { padding: 0 1.2rem; }
+
+      .nav-links {
+        display: none;
+        position: fixed;
+        inset: 0;
+        top: 68px;
+        background: rgba(10,15,30,0.97);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5rem;
+        z-index: 99;
+      }
+
+      .nav-links.open { display: flex; }
+
+      .nav-links a {
+        font-size: 1.2rem;
+      }
+
+      .hamburger { display: flex; }
+
+      .hero-content { padding: 0 1rem; }
+
+      .section { padding: 3.5rem 1.2rem; }
+
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+
+      .cards-grid { grid-template-columns: 1fr; }
+
+      .hero-actions { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-outline { width: 100%; max-width: 280px; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-    <div class="hero">
-        <nav class="navbar">
-            <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
-  <div>Disaster Management</div>
- 
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="sos.html">SOS</a></li>
-                <!-- <li><a href="http://127.0.0.1:5000">Qchat</a></li> -->
-                 <li><a href="Qchat.html">Qchat</a></li>
-                <li><a href="service.html">Services</a></li>
-                <li><a href="ppj.html">Sign In</a></li>
-                
-            </ul>
-            
-        </nav>
-        <div class="updates-section">
-            <h1>Latest Updates</h1>
-            <p id="update-text">Stay informed with the latest disaster alerts and updates.</p>
-            <button class="explore-btn" ><a href="exp.html">Explore</a></button>
-        </div>
-    </div>
-    <div class="info-cards">
-        <div class="card" data-info="Flood alert in City A. Evacuation in progress.">
-            <h3>Info Update</h3>
-            <p>Stay updated with the latest disaster information and safety tips.</p>
-            <p><strong>Location:</strong> City A</p>
-            <p><strong>Status:</strong> Active</p>
-        </div>
-        <div class="card" data-info="Earthquake warning in Region B. Stay safe and follow guidelines.">
-            <h3>Stay Updated</h3>
-            <p>Receive real-time alerts and updates on disaster situations.</p>
-            <p><strong>Alert Type:</strong> Earthquake Warning</p>
-            <p><strong>Region:</strong> Region B</p>
-        </div>
-        <div class="card emergency">
-            <h3>Call for Help</h3>
-            <p>Need assistance? Contact emergency services immediately.</p>
-            <button class="help-btn" onclick="showEmergencyPopup()">Get Help Now</button>
-        </div>
-            <!-- Emergency Popup Modal -->
-    <div id="emergencyPopup" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="hideEmergencyPopup()">&times;</span>
-            <h2>Emergency Contact Information</h2>
-            <p><strong>Stay calm and provide your location when contacting services.</strong></p>
-            <ul>
-                <li><strong>National Emergency Helpline:</strong> 112</li>
-                <li><strong>Police:</strong> 100</li>
-                <li><strong>Fire Services:</strong> 101</li>
-                <li><strong>Ambulance:</strong> 108</li>
-                <li><strong>National Disaster Response Force (NDRF):</strong> +91-9711077372</li>
-                <li><strong>State Disaster Management Authority (Example):</strong> +91-11-23456000 (Delhi)</li>
-            </ul>
-            <h3>Instructions:</h3>
-            <p>
-                - Call the appropriate number based on your emergency.<br>
-                - Provide your exact location and describe the situation.<br>
-                - Follow official instructions and stay safe.<br>
-                - Use the SOS feature on this website for location sharing.
-            </p>
-            <button class="modal-close-btn" onclick="hideEmergencyPopup()">Close</button>
-        </div>
-    </div>
 
-        </div>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
+      <span class="brand-text">RES<span>Q</span></span>
     </div>
-    <script src="./js/index.js"></script>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="sos.html">SOS</a></li>
+      <li><a href="Qchat.html">Qchat</a></li>
+      <li><a href="service.html">Services</a></li>
+      <li><a href="ppj.html" class="nav-signin">Sign In</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="live-dot"></span>
+        Live Monitoring Active
+      </div>
+      <h1 class="hero-title">
+        DISASTER<br><span class="accent">RESPONSE</span><br>NETWORK
+      </h1>
+      <p class="hero-subtitle">
+        Real-time alerts, emergency coordination, and safety resources — when every second counts.
+      </p>
+      <div class="hero-actions">
+        <a href="exp.html" class="btn-primary">Explore Updates</a>
+        <a href="sos.html" class="btn-outline">Trigger SOS</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      Scroll
+    </div>
+  </section>
+
+  <!-- ALERT TICKER -->
+  <div class="ticker-bar">
+    <div class="ticker-inner">
+      <span class="ticker-item">Flood Alert — City A — Evacuation in Progress</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Earthquake Warning — Region B — Stay Indoors</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Cyclone Watch — Coastal Zone C — Prepare Now</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">NDRF Deployed — District D — Rescue Ongoing</span>
+      <span class="ticker-sep">|</span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item">Flood Alert — City A — Evacuation in Progress</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Earthquake Warning — Region B — Stay Indoors</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Cyclone Watch — Coastal Zone C — Prepare Now</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">NDRF Deployed — District D — Rescue Ongoing</span>
+      <span class="ticker-sep">|</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="stat-number">24/7</div>
+      <div class="stat-label">Monitoring</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">112</div>
+      <div class="stat-label">Emergency Line</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">38+</div>
+      <div class="stat-label">Active Alerts</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">6</div>
+      <div class="stat-label">Regions Covered</div>
+    </div>
+  </div>
+
+  <!-- CARDS -->
+  <section class="section">
+    <p class="section-eyebrow">Situation Report</p>
+    <h2 class="section-title">Current Alerts &amp;<br>Emergency Resources</h2>
+    <div class="cards-grid">
+
+      <!-- Card 1 -->
+      <div class="card">
+        <div class="card-icon">🌊</div>
+        <h3>Flood Alert</h3>
+        <p>Severe flooding reported in City A. Evacuation routes are active. Do not attempt to cross flooded roads.</p>
+        <div class="card-meta">
+          <span class="tag tag-danger"><span class="tag-dot"></span>Active</span>
+          <span class="tag tag-warning">City A</span>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card">
+        <div class="card-icon">🌍</div>
+        <h3>Earthquake Warning</h3>
+        <p>Magnitude 5.4 tremor detected near Region B. Aftershocks possible. Follow official safety guidelines.</p>
+        <div class="card-meta">
+          <span class="tag tag-danger"><span class="tag-dot"></span>Warning</span>
+          <span class="tag tag-warning">Region B</span>
+        </div>
+      </div>
+
+      <!-- Emergency Card -->
+      <div class="card card-emergency">
+        <div class="card-icon">🚨</div>
+        <h3>Emergency Contacts</h3>
+        <p>Need immediate help? Call the appropriate emergency number for your situation.</p>
+        <div class="emergency-numbers">
+          <div class="emer-row">
+            <span class="emer-label">National Emergency</span>
+            <span class="emer-num">112</span>
+          </div>
+          <div class="emer-row">
+            <span class="emer-label">Ambulance</span>
+            <span class="emer-num">108</span>
+          </div>
+          <div class="emer-row">
+            <span class="emer-label">Fire Services</span>
+            <span class="emer-num">101</span>
+          </div>
+        </div>
+        <button class="btn-emergency" onclick="openModal()">
+          <span>⚡</span> Get Help Now
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EMERGENCY MODAL -->
+  <div class="modal-backdrop" id="emergencyModal" onclick="closeOnBackdrop(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-header">
+        <div class="modal-icon">🚨</div>
+        <h2>Emergency <span>Contacts</span></h2>
+      </div>
+      <p class="modal-desc">Stay calm. Provide your exact location and describe the situation clearly when contacting services.</p>
+      <div class="modal-numbers">
+        <div class="modal-row"><span class="modal-row-label">National Emergency Helpline</span><span class="modal-row-num">112</span></div>
+        <div class="modal-row"><span class="modal-row-label">Police</span><span class="modal-row-num">100</span></div>
+        <div class="modal-row"><span class="modal-row-label">Fire Services</span><span class="modal-row-num">101</span></div>
+        <div class="modal-row"><span class="modal-row-label">Ambulance</span><span class="modal-row-num">108</span></div>
+        <div class="modal-row"><span class="modal-row-label">NDRF</span><span class="modal-row-num">+91-97110 77372</span></div>
+        <div class="modal-row"><span class="modal-row-label">SDMA (Delhi)</span><span class="modal-row-num">+91-11-23456000</span></div>
+      </div>
+      <div class="modal-instructions">
+        <p>
+          — Call the number appropriate to your emergency.<br>
+          — Give your exact location and describe the situation.<br>
+          — Follow all official instructions and stay safe.<br>
+          — Use the SOS feature on this website to share your location.
+        </p>
+      </div>
+      <button class="btn-emergency" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 <span>RESQ</span> Disaster Management Network. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      const ham = document.getElementById('hamburger');
+      nav.classList.toggle('open');
+      ham.classList.toggle('open');
+    }
+
+    function openModal() {
+      document.getElementById('emergencyModal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('emergencyModal').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    function closeOnBackdrop(e) {
+      if (e.target === document.getElementById('emergencyModal')) closeModal();
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
 </body>
 </html>
