@@ -1,61 +1,92 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 from groq import Groq
-import os
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-groq_api_key = os.getenv("GROQ_API_KEY")
-# groq_api_key = "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"
-client = Groq(api_key=groq_api_key)
 
-@app.route('/')
-# def home():
-    # return render_template('Qchat.html')
+client = Groq(api_key="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")
+
+SYSTEM_PROMPT = """
+You are RESQ Assistant — a multilingual Disaster Management AI built into the RESQ emergency response platform.
+
+LANGUAGE RULE (CRITICAL):
+- Detect the language of the user's message automatically.
+- Always reply in the SAME language the user wrote in.
+- If the user writes in Hindi (हिंदी), reply fully in Hindi.
+- If the user writes in Hinglish (mixed Hindi+English), reply in Hinglish.
+- If the user writes in Tamil, Telugu, Bengali, Marathi, Gujarati, Punjabi, Malayalam, Kannada, Urdu, or any other language — reply in that language.
+- If the user writes in French, Spanish, Arabic, German, Japanese, etc. — reply in that language.
+- Never switch to English unless the user writes in English.
+- Never tell the user you are translating. Just respond naturally in their language.
+
+YOUR ROLE:
+You are an expert AI designed to assist users during natural disasters such as earthquakes, floods, hurricanes, cyclones, wildfires, landslides, and other emergencies.
+
+Provide quick, accurate, and actionable advice including:
+- Step-by-step evacuation guidance
+- First aid instructions
+- Emergency supply checklists
+- Communication with authorities
+- Safe shelter finding
+
+If the situation is unclear, ask clarifying questions to provide the most relevant advice. Always prioritize safety. Avoid speculative information.
+
+RESQ PLATFORM FEATURES (guide users to these):
+- Homepage: Main page with SOS button — /index.html
+- SOS & Map page: Quell Zones (safe areas), hospitals, SOS alerts, AutoQ routing, live weather — /sos.html
+- Q-Chat: This chat interface — /Qchat.html
+- Services & Volunteer: Volunteer registration, Qpoints rewards — /service.html
+- Sign In / Register: /ppj.html
+
+When users ask about the platform, guide them with HTML links like:
+<a href="/sos.html" data-action="open_sos">SOS Map खोलें</a>  (in Hindi)
+<a href="/sos.html" data-action="open_sos">Open SOS Map</a>  (in English)
+
+Keep platform navigation responses concise. For disaster queries, be thorough and safety-focused.
+
+QPOINTS SYSTEM:
+Volunteers earn Qpoints for every mission. They can redeem them for rewards like first-aid kits, certificates, gear packs. Guide users to /service.html for details.
+"""
 
 @app.route('/get', methods=['GET'])
 def get_bot_response():
-    user_text = request.args.get('msg')
+    user_text = request.args.get('msg', '').strip()
+    lang_hint = request.args.get('lang', '')  # optional language hint from frontend
+
     if not user_text:
         return jsonify({'response': 'Please enter a message.'})
 
+    # Build messages
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+
+    # If frontend sends explicit language hint, reinforce it
+    if lang_hint:
+        messages.append({
+            "role": "system",
+            "content": f"The user has selected '{lang_hint}' as their preferred language. Prioritize responding in {lang_hint} even if the message seems ambiguous."
+        })
+
+    messages.append({"role": "user", "content": user_text})
+
     try:
-        # Call Groq API for response
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a Disaster Management Assistant, an expert AI designed to assist users during natural disasters "
-                        "such as earthquakes, floods, hurricanes, wildfires, and other emergencies. Provide quick, accurate, and "
-                        "actionable advice to ensure user safety and preparedness, including step-by-step guidance for evacuation, "
-                        "first aid, emergency supplies, and communication with authorities. If the situation is unclear, ask clarifying "
-                        "questions to provide the most relevant advice. Always prioritize safety and reliability, and avoid speculative "
-                        "information.\n\n"
-                        "You are also integrated into a disaster management web platform (RESQ/Emergency SOS Hub) with the following features:\n"
-                        "- **Homepage (/RESQ/index.html)**: Main page with an overview and SOS button to send emergency alerts.\n"
-                        "- **Interactive Map (/RESQ/sos.html)**: Shows Quell Zones (safe areas like Civil Hospital, Lohia Hospital, Community Shelter "
-                        "in Lucknow), hospitals, and SOS points with navigation and real-time weather.\n"
-                        "- **SOS Page (/RESQ/sos.html)**: Allows users to send emergency alerts and connect with volunteers via Q-Link.\n"
-                        "- **AutoQ**: Predictive routing to guide users to the nearest Quell Zone (accessible via the map).\n"
-                        "- **Q-Link**: Communication bridge for users, volunteers, and command centers (accessible via /RESQ/sos.html).\n"
-                        "When users ask about using the platform, guide them to the relevant page or feature with clear instructions, "
-                        "including URLs (e.g., '/RESQ/sos.html' for the map) or actions (e.g., 'Click the SOS button'). Use HTML links in responses "
-                        "like <a href=\"/RESQ/sos.html\" data-action=\"open_map\">Go to Map</a> for navigation. For platform-related queries, keep "
-                        "responses concise and include navigation tips. For disaster queries, focus on safety and actionable steps."
-                    )
-                },
-                {"role": "user", "content": user_text}
-            ],
+            model="llama-3.3-70b-versatile",
+            messages=messages,
             temperature=0.7,
-            max_tokens=500
+            max_tokens=600
         )
         bot_response = response.choices[0].message.content
         return jsonify({'response': bot_response})
+
     except Exception as e:
         return jsonify({'response': f'Error: {str(e)}'})
 
+
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({'status': 'ok', 'service': 'RESQ Chatbot'})
+
+
 if __name__ == '__main__':
-    # app.run(debug=True)
     app.run(debug=False)
