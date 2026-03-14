@@ -72,11 +72,9 @@ Sponsor Technologies Used:
 
 ---
 
-🛽 Demo & Deliverables
+🛽 Deliverables
 
-Demo Video Link: https://drive.google.com/file/d/12_gPt20FFl2jcNe4GN2l26KXV5fCDZOm/view?usp=drivesdk
 
-Pitch Deck / PPT Link: https://drive.google.com/file/d/1bddkECqG5Bnlbx5Qhe_a3AmptDqyen3y/view?usp=drivesdk
 
 MVP (Working Prototype):
 
