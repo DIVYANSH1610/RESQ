@@ -1,4 +1,4 @@
-![github-submission-banner](https://github.com/user-attachments/assets/a1493b84-e4e2-456e-a791-ce35ee2bcf2f)
+
 
 🚀 RESQ
 
@@ -23,24 +23,6 @@ RESQ solves this by providing instant alerts, guided evacuation, and volunteer c
 
 
 ---
-
-🧬 Team & Approach
-
-Team Name:
-
-ByteRunners
-
-Team Members:
-
-Divyansh Dwivedi (GitHub / Team Leader)
-
-Divyanshu Kumar Yadav
-
-Shreya Yadav
-
-Harsh Singh
-
-
 Our Approach:
 
 Chose this problem to save lives during unpredictable crises using AI-powered systems.
@@ -59,11 +41,7 @@ Core Technologies Used:
 
 Frontend: React.js, Tailwind CSS, HTML/CSS
 
-Backend: Node.js
-
-Database: Firebase Realtime Database, SQL Database (for analytics)
-
-APIs: Google Maps API, Firebase Auth
+Backend: Flask
 
 Hosting: Render,GitHub
 
