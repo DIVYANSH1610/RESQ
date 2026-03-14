@@ -1,393 +1,699 @@
+
+html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RESQ - Services</title>
+  <title>RESQ — Services & Volunteer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --red: #E8321A; --red-dark: #B52411; --amber: #F5A623;
+      --navy: #0A0F1E; --navy-mid: #111827; --navy-light: #1C2436;
+      --white: #F4F1EC; --muted: rgba(244,241,236,0.55);
+      --border: rgba(244,241,236,0.12); --border-hover: rgba(244,241,236,0.25);
+      --gold: #F5C842; --gold-dim: rgba(245,200,66,0.15);
+      --green: #22c55e;
+      --ease: cubic-bezier(0.22,1,0.36,1);
     }
 
+    /* ── SMOOTH BASE ── */
+    html { scroll-behavior: smooth; }
     body {
-      background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
-      color: #333;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy); color: var(--white);
+      overflow-x: hidden;
+      animation: pageIn 0.45s ease both;
     }
+    @keyframes pageIn { from { opacity:0; } to { opacity:1; } }
+    body.page-exit { animation: pageOut 0.28s ease forwards; pointer-events: none; }
+    @keyframes pageOut { to { opacity:0; transform: translateY(-6px); } }
 
+    ::selection { background: rgba(232,50,26,0.3); color: #F4F1EC; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(232,50,26,0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(232,50,26,0.55); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.65s var(--ease), transform 0.65s var(--ease);
+    }
+    .reveal.revealed { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: 0.08s; }
+    .reveal-d2 { transition-delay: 0.16s; }
+    .reveal-d3 { transition-delay: 0.24s; }
+    .reveal-d4 { transition-delay: 0.32s; }
+    .reveal-d5 { transition-delay: 0.40s; }
+    .reveal-d6 { transition-delay: 0.48s; }
+
+    /* ── NAVBAR ── */
     .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 50px;
-      background-color: #7494ec; /* Set navbar color to #7494ec */
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 68px;
+      background: rgba(10,15,30,0.85); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     }
-
-    .logo {
-      height: 70px;
-      border: none;
-      border-radius: 2px;
+    .navbar.scrolled { height: 56px; background: rgba(10,15,30,0.97); box-shadow: 0 4px 28px rgba(0,0,0,0.45); }
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo { height: 40px; border-radius: 6px; object-fit: contain; transition: transform 0.3s var(--ease); }
+    .logo:hover { transform: scale(1.06); }
+    .brand-text { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.06em; color: var(--white); }
+    .brand-text span { color: var(--red); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted); font-size: 0.88rem; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase; position: relative;
+      transition: color 0.22s ease;
     }
+    .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--red); transition: width 0.28s var(--ease); }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .nav-signin { background: var(--red) !important; color: var(--white) !important; padding: 6px 16px; border-radius: 6px; transition: background 0.2s, transform 0.22s var(--ease) !important; }
+    .nav-signin:hover { background: var(--red-dark) !important; transform: translateY(-2px) !important; }
+    .nav-signin::after { display: none !important; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--white); border-radius: 2px; transition: all 0.3s var(--ease); }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
 
-    .nav-links {
-      list-style: none;
-      display: flex;
-      gap: 20px;
+    /* ── PAGE HERO ── */
+    .page-hero {
+      position: relative; padding-top: 68px; min-height: 380px;
+      display: flex; align-items: flex-end; overflow: hidden;
     }
-
-    .nav-links li a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-      transition: color 0.3s;
+    .page-hero-bg {
+      position: absolute; inset: 0;
+      background: url('https://akm-img-a-in.tosshub.com/indiatoday/images/story/201608/ndrf--_647_082216040012.jpg') center 40% / cover no-repeat;
+      transform: scale(1.04); animation: slowZoom 22s ease-in-out infinite alternate;
     }
-
-    .nav-links li a:hover {
-      color: #00b4d8;
+    @keyframes slowZoom { from { transform: scale(1.04); } to { transform: scale(1.10); } }
+    .page-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(10,15,30,0.55) 0%, rgba(10,15,30,0.9) 75%, var(--navy) 100%);
     }
-
-    .content-wrapper {
-      transition: filter 0.3s ease;
+    .page-hero-content {
+      position: relative; z-index: 2; padding: 3rem 2.5rem;
+      max-width: 1200px; width: 100%; margin: 0 auto;
+      animation: heroIn 0.9s var(--ease) 0.1s both;
     }
+    @keyframes heroIn { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform:none; } }
+    .page-eyebrow { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 0.8rem; }
+    .page-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--red); }
+    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.8rem,8vw,5.5rem); line-height: 0.95; letter-spacing: 0.03em; }
+    .page-title span { color: var(--red); }
+    .page-hero-sub { margin-top: 1rem; font-size: 1rem; color: var(--muted); font-weight: 300; max-width: 500px; line-height: 1.7; }
 
-    .content-wrapper.blur {
-      filter: blur(4px);
+    /* ── TICKER ── */
+    .ticker-bar { background: var(--red); padding: 8px 0; overflow: hidden; white-space: nowrap; }
+    .ticker-bar:hover .ticker-inner { animation-play-state: paused; }
+    .ticker-inner { display: inline-flex; animation: ticker 30s linear infinite; }
+    .ticker-item { display: inline-flex; align-items: center; gap: 10px; padding: 0 2.5rem; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+    .ticker-item::before { content: '⚠'; font-size: 0.75rem; }
+    .ticker-sep { color: rgba(255,255,255,0.4); padding: 0 0.4rem; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .divider-bar { height: 3px; background: linear-gradient(to right, var(--red), transparent); max-width: 1200px; margin: 0 auto; }
+
+    /* ── MAIN LAYOUT ── */
+    .main-wrapper { max-width: 1200px; margin: 0 auto; padding: 4rem 2.5rem 6rem; }
+
+    /* ── MISSION STRIP ── */
+    .mission-banner {
+      background: linear-gradient(135deg, rgba(232,50,26,0.1), rgba(232,50,26,0.03));
+      border: 1px solid rgba(232,50,26,0.25); border-left: 3px solid var(--red);
+      border-radius: 0 12px 12px 0; padding: 1.6rem 2rem; margin-bottom: 3rem;
+      transition: border-color 0.3s, background 0.3s;
     }
+    .mission-banner:hover { border-color: rgba(232,50,26,0.45); background: linear-gradient(135deg, rgba(232,50,26,0.15), rgba(232,50,26,0.05)); }
+    .mission-banner p { font-size: 1rem; color: var(--white); line-height: 1.8; font-weight: 300; }
+    .mission-banner strong { color: #FF7A63; font-weight: 600; }
 
-    header {
-      background-color: #fff;
-      padding: 20px;
-      text-align: center;
+    /* ── SECTION LABEL ── */
+    .section-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); margin-bottom: 0.5rem; }
+    .section-heading { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.8rem,4vw,2.6rem); letter-spacing: 0.04em; line-height: 1.05; margin-bottom: 1.5rem; }
+    .section-heading span { color: var(--red); }
+
+    /* ── SERVICES GRID ── */
+    .services-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; margin-bottom: 4rem; }
+    .service-card {
+      background: var(--navy-mid); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.6rem; position: relative; overflow: hidden;
+      transition: transform 0.28s var(--ease), border-color 0.28s, box-shadow 0.28s;
     }
-
-    h1 {
-      color: #7494ec; /* Set header color to match navbar */
+    .service-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--red); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s var(--ease);
     }
-
-    .section {
-      padding: 40px 20px;
-      max-width: 1000px;
-      margin: auto;
+    .service-card:hover { transform: translateY(-6px); border-color: var(--border-hover); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-icon {
+      width: 48px; height: 48px; background: rgba(232,50,26,0.12); border: 1px solid rgba(232,50,26,0.25);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1rem;
+      transition: background 0.2s, transform 0.28s var(--ease);
     }
+    .service-card:hover .service-icon { background: rgba(232,50,26,0.22); transform: scale(1.1) rotate(-4deg); }
+    .service-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+    .service-desc { font-size: 0.84rem; color: var(--muted); line-height: 1.65; }
 
-    .section h2 {
-      color: #222;
-      margin-bottom: 15px;
+    /* ── TWO-COL ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 4rem; align-items: start; }
+
+    /* ── DONATION ── */
+    .donation-section {}
+    .body-text { font-size: 0.95rem; color: var(--muted); line-height: 1.8; font-weight: 300; margin-bottom: 1.5rem; }
+    .donate-btns { display: flex; flex-direction: column; gap: 10px; }
+    .donate-btn {
+      display: flex; align-items: center; gap: 12px; padding: 13px 18px;
+      background: var(--navy-mid); border: 1px solid var(--border); border-radius: 10px;
+      color: var(--white); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+      transition: background 0.22s, border-color 0.22s, transform 0.22s var(--ease), box-shadow 0.22s;
+      position: relative; overflow: hidden;
     }
+    .donate-btn:hover { background: rgba(255,255,255,0.07); border-color: var(--border-hover); transform: translateX(5px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+    .donate-btn .btn-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .donate-btn.upi .btn-icon { background: rgba(34,197,94,0.15); }
+    .donate-btn.paypal .btn-icon { background: rgba(96,165,250,0.15); }
+    .donate-btn .btn-label { flex: 1; }
+    .donate-btn .btn-sub { display: block; font-size: 0.72rem; font-weight: 400; color: var(--muted); margin-top: 1px; }
+    .donate-btn .btn-arrow { color: var(--muted); font-size: 1.1rem; transition: transform 0.22s var(--ease); }
+    .donate-btn:hover .btn-arrow { transform: translateX(4px); color: var(--white); }
 
-    .section p {
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    .donation-images {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .donation-images img {
-      width: 300px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .volunteer-btn, .donate-btn {
-      display: inline-block;
-      margin-top: 20px;
-      background-color: #7494ec; /* Set buttons color to #7494ec */
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      text-decoration: none;
-    }
-
-    .donation-links {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 15px 0;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      position: relative;
-      margin: auto;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      font-size: 22px;
-      cursor: pointer;
-    }
-
-    .modal-content h3 {
-      margin-bottom: 20px;
-      color: #7494ec; /* Header inside modal matches navbar */
-    }
-
-    .modal-content label {
+    /* ── IMAGES ── */
+    .relief-images { display: flex; flex-direction: column; gap: 1rem; }
+    .relief-img {
+      width: 100%; height: 160px; object-fit: cover; border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: transform 0.35s var(--ease), box-shadow 0.35s;
       display: block;
-      margin: 10px 0 5px;
     }
+    .relief-img:hover { transform: scale(1.02); box-shadow: 0 16px 40px rgba(0,0,0,0.45); }
 
-    .modal-content input, .modal-content textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+    /* ── VOLUNTEER SECTION ── */
+    .volunteer-section {
+      background: linear-gradient(135deg, #15110A, #231A05 60%, #1A1506);
+      border: 1px solid rgba(245,200,66,0.3); border-radius: 16px; padding: 2.5rem;
+      position: relative; overflow: hidden; margin-bottom: 4rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
-
-    .modal-content button {
-      background-color: #7494ec; /* Button color inside modal matches navbar */
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+    .volunteer-section:hover { border-color: rgba(245,200,66,0.5); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+    .volunteer-section::before {
+      content: 'VOLUNTEER'; position: absolute; right: -20px; top: -20px;
+      font-family: 'Bebas Neue', sans-serif; font-size: 7rem; color: rgba(245,200,66,0.05);
+      line-height: 1; pointer-events: none; white-space: nowrap;
     }
-
-    .alert-popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #d4edda;
-      color: #155724;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      z-index: 1000;
-      text-align: center;
-      font-weight: bold;
+    .vol-grid { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; }
+    .vol-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+    .vol-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.8rem,4vw,2.4rem); letter-spacing: 0.04em; line-height: 1.05; margin-bottom: 0.8rem; }
+    .vol-title span { color: var(--gold); }
+    .vol-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.75; font-weight: 300; max-width: 520px; }
+    .vol-actions { display: flex; flex-direction: column; gap: 10px; min-width: 200px; position: relative; z-index: 1; }
+    .btn-volunteer {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 22px; background: var(--gold); color: #1A1300;
+      border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      cursor: pointer; text-decoration: none;
+      transition: opacity 0.2s, transform 0.22s var(--ease), box-shadow 0.22s;
     }
-
-    .dashboard-btn {
-      display: none;
-      margin-top: 10px;
-      background-color: #2196f3;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      text-decoration: none;
-      transition: background-color 0.3s;
+    .btn-volunteer:hover { opacity: 0.9; transform: translateY(-3px); box-shadow: 0 12px 28px rgba(245,200,66,0.25); }
+    .btn-vol-outline {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 22px; background: transparent; color: var(--white);
+      border: 1px solid rgba(244,241,236,0.2); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer;
+      transition: background 0.22s, border-color 0.22s, transform 0.22s var(--ease);
     }
+    .btn-vol-outline:hover { background: rgba(255,255,255,0.07); border-color: rgba(244,241,236,0.35); transform: translateY(-3px); }
 
-    .dashboard-btn:hover {
-      background-color: #1976d2;
+    /* ── QPOINTS PREVIEW ── */
+    .qpoints-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 4rem; }
+    .qp-card {
+      background: var(--navy-mid); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.4rem; text-align: center; position: relative; overflow: hidden;
+      transition: transform 0.28s var(--ease), border-color 0.28s, box-shadow 0.28s;
     }
+    .qp-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.35s var(--ease); }
+    .qp-card:hover { transform: translateY(-5px); border-color: rgba(245,200,66,0.2); box-shadow: 0 16px 36px rgba(0,0,0,0.35); }
+    .qp-card:hover::after { transform: scaleX(1); }
+    .qp-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--gold); line-height: 1; margin-bottom: 0.3rem; }
+    .qp-label { font-size: 0.82rem; font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
+    .qp-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.5; }
 
-    footer {
-      background-color: #fff;
-      text-align: center;
-      padding: 15px;
-      margin-top: 40px;
-      box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--border); padding: 2rem 2.5rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+    footer span { color: var(--red); }
+
+    /* ── MODALS ── */
+    .overlay-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
+      z-index: 500; align-items: center; justify-content: center; padding: 1.5rem;
+      overflow-y: auto;
     }
+    .overlay-backdrop.show { display: flex; animation: backdropIn 0.22s ease; }
+    @keyframes backdropIn { from { opacity:0; } to { opacity:1; } }
 
-    @media screen and (max-width: 600px) {
-      .donation-images {
-        flex-direction: column;
-        align-items: center;
+    .modal-box {
+      background: var(--navy-mid); border: 1px solid var(--border); border-radius: 16px;
+      padding: 2rem; max-width: 500px; width: 100%; position: relative;
+      margin: auto;
+      animation: modalIn 0.4s var(--ease) both;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-box::-webkit-scrollbar { width: 4px; }
+    .modal-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @keyframes modalIn { from { opacity:0; transform: scale(0.9) translateY(20px); } to { opacity:1; transform:none; } }
+
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 32px; height: 32px; background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1rem; color: var(--muted);
+      transition: background 0.2s, color 0.2s, transform 0.22s var(--ease);
+    }
+    .modal-close:hover { background: rgba(232,50,26,0.15); color: #FF7A63; transform: rotate(90deg); }
+
+    .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.4rem; }
+    .modal-icon { width: 44px; height: 44px; background: rgba(232,50,26,0.12); border: 1px solid rgba(232,50,26,0.25); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.04em; }
+    .modal-title span { color: var(--red); }
+
+    /* FORM ELEMENTS */
+    .form-group { margin-bottom: 0.9rem; }
+    .form-group label { display: block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--white);
+      outline: none; resize: none;
+      transition: border-color 0.22s, box-shadow 0.22s;
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: var(--muted); }
+    .form-group input:focus, .form-group textarea:focus { border-color: rgba(232,50,26,0.5); box-shadow: 0 0 0 3px rgba(232,50,26,0.1); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .btn-submit {
+      width: 100%; padding: 13px; background: var(--red); color: #fff; border: none;
+      border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; margin-top: 0.5rem;
+      transition: background 0.2s, transform 0.22s var(--ease), box-shadow 0.22s;
+    }
+    .btn-submit:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(232,50,26,0.3); }
+
+    /* TOAST */
+    .toast {
+      display: none; position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      z-index: 600; background: var(--navy-mid); border: 1px solid rgba(34,197,94,0.3);
+      border-left: 3px solid var(--green); border-radius: 10px; padding: 1rem 1.5rem;
+      font-size: 0.88rem; color: var(--white); align-items: center; gap: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4); white-space: nowrap;
+    }
+    .toast.show { display: flex; animation: toastIn 0.45s var(--ease) both; }
+    @keyframes toastIn { from { opacity:0; transform: translate(-50%,20px); } to { opacity:1; transform:translate(-50%,0); } }
+    .toast-icon { color: var(--green); font-size: 1.2rem; }
+    .toast-dash {
+      display: none; padding: 7px 16px; background: var(--gold); color: #1A1300;
+      border: none; border-radius: 7px; font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer;
+      transition: opacity 0.2s, transform 0.22s var(--ease);
+    }
+    .toast-dash:hover { opacity: 0.88; transform: translateY(-2px); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+      .vol-grid { grid-template-columns: 1fr; }
+      .vol-actions { flex-direction: row; min-width: auto; }
+      .qpoints-row { grid-template-columns: 1fr 1fr; }
+      .relief-images { flex-direction: row; }
+      .relief-img { height: 130px; }
+    }
+    @media (max-width: 640px) {
+      .navbar { padding: 0 1.2rem; }
+      .nav-links {
+        display: none; position: fixed; inset: 0; top: 68px;
+        background: rgba(10,15,30,0.97); backdrop-filter: blur(16px);
+        flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; z-index: 99;
       }
+      .nav-links.open { display: flex; animation: menuIn 0.3s var(--ease); }
+      @keyframes menuIn { from { opacity:0; transform:scale(0.97); } to { opacity:1; transform:none; } }
+      .nav-links a { font-size: 1.2rem; }
+      .hamburger { display: flex; }
+      .page-hero-content { padding: 2rem 1.2rem; }
+      .main-wrapper { padding: 2.5rem 1.2rem 4rem; }
+      .services-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .qpoints-row { grid-template-columns: 1fr; }
+      .vol-actions { flex-direction: column; }
+      .relief-images { flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar">
-    <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
-    <ul class="nav-links">
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="nav-brand">
+      <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
+      <span class="brand-text">RES<span>Q</span></span>
+    </a>
+    <ul class="nav-links" id="navLinks">
       <li><a href="index.html">Home</a></li>
       <li><a href="sos.html">SOS</a></li>
       <li><a href="Qchat.html">Qchat</a></li>
-      <li><a href="service.html">Services</a></li>
-      <li><a href="ppj.html">Sign In</a></li>
+      <li><a href="service.html" class="active">Services</a></li>
+      <li><a href="ppj.html" class="nav-signin">Sign In</a></li>
     </ul>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
   </nav>
 
-  <div class="content-wrapper">
-    <header>
-      <h1>RESQ Services</h1>
-      <p>Respond. Evacuate. Support. Quickly.</p>
-    </header>
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <p class="page-eyebrow">What We Do</p>
+      <h1 class="page-title">RESQ<br><span>Services</span></h1>
+      <p class="page-hero-sub">Respond. Evacuate. Support. Quickly. — Real help, real people, real impact.</p>
+    </div>
+  </section>
 
-    <section class="section">
-      <h2>Our Mission</h2>
-      <p>RESQ is committed to providing rapid emergency response, medical assistance, and emotional support to individuals affected by natural disasters or crises.</p>
+  <!-- TICKER -->
+  <div class="ticker-bar">
+    <div class="ticker-inner">
+      <span class="ticker-item">Flood Alert — City A — Evacuation in Progress</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Earthquake Warning — Region B — Stay Indoors</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Cyclone Watch — Coastal Zone C — Prepare Now</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">NDRF Deployed — District D — Rescue Ongoing</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Flood Alert — City A — Evacuation in Progress</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Earthquake Warning — Region B — Stay Indoors</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Cyclone Watch — Coastal Zone C — Prepare Now</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">NDRF Deployed — District D — Rescue Ongoing</span>
+      <span class="ticker-sep">|</span>
+    </div>
+  </div>
+  <div class="divider-bar"></div>
 
-      <h2>What We Do</h2>
-      <ul>
-        <li><strong>Medical Aid:</strong> On-site emergency treatment, mobile clinics, and first-aid supply distribution.</li>
-        <li><strong>Rescue Operations:</strong> Deployment of trained personnel during floods, earthquakes, and fires.</li>
-        <li><strong>Counseling & Relief:</strong> Psychological support, food distribution, and temporary shelter setup.</li>
-      </ul>
-    </section>
+  <!-- MAIN -->
+  <div class="main-wrapper">
 
-    <section class="section">
-      <h2>Donation & Relief Efforts</h2>
-      <p>Your donations directly fund emergency supplies, shelter, food, and first-aid kits for disaster victims.</p>
+    <!-- MISSION -->
+    <div class="mission-banner reveal">
+      <p><strong>Our Mission —</strong> RESQ is committed to providing rapid emergency response, medical assistance, volunteer coordination, and emotional support to individuals affected by natural disasters or crises — with <strong>speed, compassion, and trust.</strong></p>
+    </div>
 
-      <div class="donation-links">
-        <a class="donate-btn" href="upi://pay?pa=donate@upi&pn=Charity+Foundation&cu=INR" target="_blank">Donate via UPI</a>
-        <a class="donate-btn" href="https://www.paypal.com/donate?business=your-paypal-email&item_name=Donation+Purpose&currency_code=USD" target="_blank">Donate via PayPal</a>
+    <!-- SERVICES -->
+    <p class="section-label reveal">Core Services</p>
+    <h2 class="section-heading reveal reveal-d1">What We <span>Provide</span></h2>
+    <div class="services-grid">
+      <div class="service-card reveal reveal-d1">
+        <div class="service-icon">🏥</div>
+        <div class="service-name">Medical Aid</div>
+        <p class="service-desc">On-site emergency treatment, mobile clinics, and first-aid supply distribution to affected communities.</p>
+      </div>
+      <div class="service-card reveal reveal-d2">
+        <div class="service-icon">🚁</div>
+        <div class="service-name">Rescue Operations</div>
+        <p class="service-desc">Deployment of trained personnel during floods, earthquakes, fires, and other critical disaster scenarios.</p>
+      </div>
+      <div class="service-card reveal reveal-d3">
+        <div class="service-icon">🤝</div>
+        <div class="service-name">Counseling & Relief</div>
+        <p class="service-desc">Psychological support, food distribution, and temporary shelter setup for displaced civilians.</p>
+      </div>
+      <div class="service-card reveal reveal-d4">
+        <div class="service-icon">📍</div>
+        <div class="service-name">Quell Zones</div>
+        <p class="service-desc">Verified safe gathering points mapped with live volunteer presence, capacity, and supplies available.</p>
+      </div>
+      <div class="service-card reveal reveal-d5">
+        <div class="service-icon">📡</div>
+        <div class="service-name">Live Coordination</div>
+        <p class="service-desc">Real-time communication between volunteer teams, emergency services, and people in distress.</p>
+      </div>
+      <div class="service-card reveal reveal-d6">
+        <div class="service-icon">🎓</div>
+        <div class="service-name">Training & Skills</div>
+        <p class="service-desc">Free first-aid, evacuation planning, and crisis communication training for registered volunteers.</p>
+      </div>
+    </div>
+
+    <!-- DONATION + IMAGES -->
+    <div class="two-col">
+      <div class="donation-section reveal">
+        <p class="section-label">Support the Cause</p>
+        <h2 class="section-heading">Donation &<br><span>Relief Efforts</span></h2>
+        <p class="body-text">Your donations directly fund emergency supplies, shelter, food, and first-aid kits for disaster victims. Every contribution — big or small — saves lives on the ground.</p>
+        <div class="donate-btns">
+          <a class="donate-btn upi" href="upi://pay?pa=donate@upi&pn=RESQ+Foundation&cu=INR" target="_blank">
+            <div class="btn-icon">₹</div>
+            <div class="btn-label">Donate via UPI<span class="btn-sub">India — Instant transfer</span></div>
+            <span class="btn-arrow">→</span>
+          </a>
+          <a class="donate-btn paypal" href="https://www.paypal.com/donate?business=your-paypal-email&item_name=RESQ+Donation&currency_code=USD" target="_blank">
+            <div class="btn-icon">P</div>
+            <div class="btn-label">Donate via PayPal<span class="btn-sub">International — Secure payment</span></div>
+            <span class="btn-arrow">→</span>
+          </a>
+        </div>
       </div>
 
-      <div class="donation-images">
-        <img src="https://gospelforasia.com/wp-content/uploads/sites/2/2024/03/gfa-world-disaster-relief-work-compassion-ministry-team-nepal-relief-distribution.jpg" alt="Relief Supplies">
-        <img src="https://hazards.colorado.edu/uploads/quick_report/Image%203%2C%20Scenario%20training-compressed.jpeg" alt="Medical Aid">
-        <img src="https://akm-img-a-in.tosshub.com/indiatoday/images/story/201608/ndrf--_647_082216040012.jpg?VersionId=RYin9b72hQgfk1fshFIQ_GkRuW.3woFH" alt="Rescue Volunteers">
+      <div class="reveal reveal-d2">
+        <div class="relief-images">
+          <img class="relief-img" src="https://gospelforasia.com/wp-content/uploads/sites/2/2024/03/gfa-world-disaster-relief-work-compassion-ministry-team-nepal-relief-distribution.jpg" alt="Relief Supplies">
+          <img class="relief-img" src="https://hazards.colorado.edu/uploads/quick_report/Image%203%2C%20Scenario%20training-compressed.jpeg" alt="Medical Aid Training">
+          <img class="relief-img" src="https://akm-img-a-in.tosshub.com/indiatoday/images/story/201608/ndrf--_647_082216040012.jpg" alt="Rescue Volunteers">
+        </div>
       </div>
+    </div>
 
-      <p><strong>Want to contribute? Donate or volunteer to make a real difference.</strong></p>
-      <button class="volunteer-btn" onclick="openForm()">Become a Volunteer</button>
-      <button class="volunteer-btn" style="background-color: #007bff; margin-left: 10px;" onclick="openLogin()">Already a Volunteer?</button>
-    </section>
+    <!-- VOLUNTEER SECTION -->
+    <div class="volunteer-section reveal">
+      <div class="vol-grid">
+        <div>
+          <p class="vol-eyebrow">★ Join the Mission</p>
+          <h2 class="vol-title">Become a<br><span>Volunteer</span></h2>
+          <p class="vol-desc">Register as a RESQ volunteer and earn Qpoints for every mission you complete. Help people in crisis, build real skills, and get rewarded for your impact.</p>
+        </div>
+        <div class="vol-actions">
+          <button class="btn-volunteer" onclick="openVolModal()">🤝 Register Now</button>
+          <button class="btn-vol-outline" onclick="openLoginModal()">Already a Volunteer?</button>
+        </div>
+      </div>
+    </div>
 
-    <footer>
-      <p>© 2025 RESQ. All Rights Reserved.</p>
-    </footer>
+    <!-- QPOINTS PREVIEW -->
+    <p class="section-label reveal">Volunteer Rewards</p>
+    <h2 class="section-heading reveal reveal-d1">Earn <span>Qpoints</span> for Every Mission</h2>
+    <div class="qpoints-row">
+      <div class="qp-card reveal reveal-d1">
+        <div class="qp-num">+50</div>
+        <div class="qp-label">First Response</div>
+        <p class="qp-desc">Earned for responding to your first emergency alert in your area.</p>
+      </div>
+      <div class="qp-card reveal reveal-d2">
+        <div class="qp-num">+120</div>
+        <div class="qp-label">Mission Complete</div>
+        <p class="qp-desc">Awarded after successfully completing a verified rescue or relief mission.</p>
+      </div>
+      <div class="qp-card reveal reveal-d3">
+        <div class="qp-num">+200</div>
+        <div class="qp-label">Community Hero</div>
+        <p class="qp-desc">Monthly badge for volunteers with the highest impact in their region.</p>
+      </div>
+      <div class="qp-card reveal reveal-d4">
+        <div class="qp-num">+30</div>
+        <div class="qp-label">Training Hour</div>
+        <p class="qp-desc">Points for every hour of RESQ-certified first-aid or crisis training.</p>
+      </div>
+      <div class="qp-card reveal reveal-d5">
+        <div class="qp-num">+75</div>
+        <div class="qp-label">Shelter Setup</div>
+        <p class="qp-desc">Helping establish or manage a Quell Zone safe area earns bonus points.</p>
+      </div>
+      <div class="qp-card reveal reveal-d6">
+        <div class="qp-num">+15</div>
+        <div class="qp-label">Daily Check-in</div>
+        <p class="qp-desc">Stay active on the network — daily check-ins keep the community strong.</p>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Volunteer Modal -->
-  <div class="modal" id="volunteerModal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeForm()">×</span>
-      <h3>Volunteer Registration</h3>
+  <footer><p>© 2025 <span>RESQ</span> Disaster Management Network. All rights reserved.</p></footer>
+
+  <!-- VOLUNTEER MODAL -->
+  <div class="overlay-backdrop" id="volOverlay">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeVolModal()">✕</button>
+      <div class="modal-header">
+        <div class="modal-icon">🤝</div>
+        <h2 class="modal-title">Volunteer <span>Registration</span></h2>
+      </div>
       <form id="volunteerForm">
-        <label for="vname">Full Name</label>
-        <input type="text" id="vname" name="vname" required>
-
-        <label for="vemail">Email</label>
-        <input type="email" id="vemail" name="vemail" required>
-
-        <label for="vphone">Phone Number</label>
-        <input type="tel" id="vphone" name="vphone" required>
-
-        <label for="vaddress">Address</label>
-        <textarea id="vaddress" name="vaddress" rows="2" required></textarea>
-
-        <label for="vage">Age</label>
-        <input type="number" id="vage" name="vage" min="16" required>
-
-        <label for="vallergies">Allergies (if any)</label>
-        <input type="text" id="vallergies" name="vallergies">
-
-        <label for="vdiseases">Chronic Diseases</label>
-        <input type="text" id="vdiseases" name="vdiseases">
-
-        <label for="vhealth">Other Health Concerns</label>
-        <input type="text" id="vhealth" name="vhealth">
-        <textarea placeholder="Why do you want to volunteer?" rows="4" required></textarea>
-
-        <button type="submit">Submit Form</button>
+        <div class="form-row">
+          <div class="form-group"><label>Full Name</label><input type="text" placeholder="Your full name" required></div>
+          <div class="form-group"><label>Age</label><input type="number" placeholder="16+" min="16" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com" required></div>
+          <div class="form-group"><label>Phone</label><input type="tel" placeholder="+91 XXXXX XXXXX" required></div>
+        </div>
+        <div class="form-group"><label>Address</label><textarea rows="2" placeholder="Your locality / city" required></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>Allergies</label><input type="text" placeholder="If any"></div>
+          <div class="form-group"><label>Chronic Conditions</label><input type="text" placeholder="If any"></div>
+        </div>
+        <div class="form-group"><label>Other Health Notes</label><input type="text" placeholder="Medications, mobility, etc."></div>
+        <div class="form-group"><label>Why do you want to volunteer?</label><textarea rows="3" placeholder="Tell us about your motivation…" required></textarea></div>
+        <button type="submit" class="btn-submit">Submit Registration →</button>
       </form>
     </div>
   </div>
 
-  <!-- Login Modal -->
-  <div class="modal" id="loginModal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeLogin()">×</span>
-      <h3>Volunteer Login</h3>
+  <!-- LOGIN MODAL -->
+  <div class="overlay-backdrop" id="loginOverlay">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeLoginModal()">✕</button>
+      <div class="modal-header">
+        <div class="modal-icon">🔑</div>
+        <h2 class="modal-title">Volunteer <span>Login</span></h2>
+      </div>
       <form id="loginForm">
-        <label for="lemail">Email</label>
-        <input type="email" id="lemail" name="lemail" required>
-
-        <label for="lpassword">Password</label>
-        <input type="password" id="lpassword" name="lpassword" required>
-
-        <button type="submit">Login</button>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com" required></div>
+        <div class="form-group"><label>Password</label><input type="password" placeholder="Your password" required></div>
+        <button type="submit" class="btn-submit">Login to Dashboard →</button>
       </form>
     </div>
   </div>
 
-  <div class="alert-popup" id="successPopup">
-    Thank you! Your volunteer registration has been successfully submitted.
-    <button id="dashboardBtn" class="dashboard-btn">Go to Volunteer Dashboard</button>
+  <!-- SUCCESS TOAST -->
+  <div class="toast" id="successToast">
+    <span class="toast-icon">✓</span>
+    <span>Registration submitted — welcome to RESQ!</span>
+    <button class="toast-dash" id="dashBtn" onclick="window.location.href='volunteer.html'">View Dashboard →</button>
   </div>
 
   <script>
-    function openForm() {
-      document.getElementById('volunteerModal').style.display = 'flex';
-      document.querySelector('.content-wrapper').classList.add('blur');
+    const ease = 'cubic-bezier(0.22,1,0.36,1)';
+
+    // ── PAGE EXIT ──
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || a.target === '_blank') return;
+      e.preventDefault();
+      document.body.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+      document.body.style.opacity = '0';
+      document.body.style.transform = 'translateY(-6px)';
+      setTimeout(() => window.location.href = href, 280);
+    });
+
+    // ── NAVBAR SCROLL ──
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+    // ── HAMBURGER ──
+    const ham = document.getElementById('hamburger');
+    const nav = document.getElementById('navLinks');
+    ham.addEventListener('click', () => { nav.classList.toggle('open'); ham.classList.toggle('open'); });
+    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { nav.classList.remove('open'); ham.classList.remove('open'); }));
+
+    // ── SCROLL REVEAL ──
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // ── COUNTER ──
+    function animateCount(el) {
+      const raw = el.textContent.trim();
+      const num = parseFloat(raw.replace(/[^\d.]/g,''));
+      const prefix = raw.match(/^[+]/) ? '+' : '';
+      const suffix = raw.replace(/[+\d.]/g,'');
+      if (isNaN(num)) return;
+      const t0 = performance.now(), dur = 1000;
+      (function tick(now) {
+        const p = Math.min((now - t0)/dur, 1);
+        const e2 = 1 - Math.pow(1 - p, 3);
+        el.textContent = prefix + Math.round(e2 * num) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    }
+    const cio = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { animateCount(e.target); cio.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.qp-num, .stat-value, .stat-number').forEach(el => cio.observe(el));
+
+    // ── MODAL HELPERS ──
+    function openVolModal() {
+      document.getElementById('volOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeVolModal() {
+      document.getElementById('volOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    function openLoginModal() {
+      document.getElementById('loginOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLoginModal() {
+      document.getElementById('loginOverlay').classList.remove('show');
+      document.body.style.overflow = '';
     }
 
-    function closeForm() {
-      document.getElementById('volunteerModal').style.display = 'none';
-      document.querySelector('.content-wrapper').classList.remove('blur');
-      document.getElementById('successPopup').style.display = 'none';
-    }
-
-    function openLogin() {
-      document.getElementById('loginModal').style.display = 'flex';
-      document.querySelector('.content-wrapper').classList.add('blur');
-    }
-
-    function closeLogin() {
-      document.getElementById('loginModal').style.display = 'none';
-      document.querySelector('.content-wrapper').classList.remove('blur');
-    }
-
-    window.onclick = function(event) {
-      if (event.target.classList.contains('modal')) {
-        closeForm();
-        closeLogin();
+    // Close on backdrop click
+    ['volOverlay','loginOverlay'].forEach(id => {
+      document.getElementById(id).addEventListener('click', e => {
+        if (e.target === document.getElementById(id)) {
+          document.getElementById(id).classList.remove('show');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeVolModal(); closeLoginModal();
       }
-    }
+    });
 
+    // ── FORMS ──
     document.getElementById('volunteerForm').addEventListener('submit', function(e) {
       e.preventDefault();
+      closeVolModal();
       this.reset();
-      closeForm();
-      document.getElementById('successPopup').style.display = 'block';
-      document.getElementById('dashboardBtn').style.display = 'inline-block';
-
-      setTimeout(() => {
-        document.getElementById('successPopup').style.display = 'none';
-        document.getElementById('dashboardBtn').style.display = 'none';
-      }, 3000);
+      const toast = document.getElementById('successToast');
+      document.getElementById('dashBtn').style.display = 'inline-block';
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); document.getElementById('dashBtn').style.display = 'none'; }, 5000);
     });
 
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      closeLogin();
-      window.location.href = 'volunteer.html';
-    });
-
-    document.getElementById('dashboardBtn').addEventListener('click', function() {
+      closeLoginModal();
       window.location.href = 'volunteer.html';
     });
   </script>
