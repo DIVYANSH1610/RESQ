@@ -280,9 +280,9 @@
       .chat-sidebar { display: none; }
       .navbar { padding: 0 1.2rem; }
       .nav-links {
-        display: none; position: fixed; inset: 0; top: 64px;
+        display: none; position: fixed; inset: 0; top: 0;
         background: rgba(10,15,30,0.97); backdrop-filter: blur(16px);
-        flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; z-index: 99;
+        flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; z-index: 200; padding-top: 64px;
       }
       .nav-links.open { display: flex; animation: menuIn 0.3s var(--ease); }
       @keyframes menuIn { from{opacity:0;transform:scale(0.97);}to{opacity:1;transform:none;} }
