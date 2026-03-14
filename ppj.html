@@ -3,249 +3,448 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login/SignUp</title>
-  <link rel="stylesheet" href="./css/ppj.css">
+  <title>RESQ — Sign In / Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <style>
-    /* Additional styles for the health form and popup */
-    .health-form {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #fff;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-      width: 90%;
-      max-width: 400px;
-      text-align: left;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --red: #E8321A; --red-dark: #B52411;
+      --navy: #0A0F1E; --navy-mid: #111827; --navy-light: #1C2436;
+      --white: #F4F1EC; --muted: rgba(244,241,236,0.55);
+      --border: rgba(244,241,236,0.12); --border-hover: rgba(244,241,236,0.25);
+      --input-bg: rgba(255,255,255,0.05); --input-bg-focus: rgba(255,255,255,0.09);
+      --ease-out: cubic-bezier(0.22,1,0.36,1);
     }
 
-    .health-form.active {
-      display: block;
+    html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--white); overflow-x: hidden; }
+    body { animation: pageIn 0.45s ease both; }
+    @keyframes pageIn { from { opacity:0; } to { opacity:1; } }
+    body.page-exit { animation: pageOut 0.28s ease forwards; pointer-events: none; }
+    @keyframes pageOut { to { opacity:0; transform: translateY(-6px); } }
+
+    ::selection { background: rgba(232,50,26,0.3); color: #F4F1EC; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(232,50,26,0.3); border-radius: 3px; }
+
+    /* BG */
+    .bg-layer {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 50%, rgba(232,50,26,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 30%, rgba(28,36,54,0.9) 0%, transparent 70%),
+        var(--navy);
+    }
+    .bg-layer::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(244,241,236,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(244,241,236,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridDrift 30s linear infinite;
+    }
+    @keyframes gridDrift { from { background-position: 0 0; } to { background-position: 60px 60px; } }
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 68px;
+      background: rgba(10,15,30,0.85); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .navbar.scrolled { height: 56px; background: rgba(10,15,30,0.97); box-shadow: 0 4px 28px rgba(0,0,0,0.45); }
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo { height: 40px; border-radius: 6px; object-fit: contain; transition: transform 0.3s var(--ease-out); }
+    .logo:hover { transform: scale(1.06); }
+    .brand-text { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.06em; color: var(--white); }
+    .brand-text span { color: var(--red); }
+    .nav-back {
+      display: flex; align-items: center; gap: 8px; text-decoration: none;
+      color: var(--muted); font-size: 0.85rem; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      transition: color 0.22s, transform 0.22s var(--ease-out);
+    }
+    .nav-back:hover { color: var(--white); transform: translateX(-3px); }
+    .nav-back i { font-size: 1.1rem; }
+
+    /* PAGE */
+    .page-wrapper {
+      position: relative; z-index: 1; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 88px 1.5rem 2rem;
     }
 
-    .health-form h2 {
-      color: #333;
-      margin-bottom: 20px;
-      text-align: center;
+    /* AUTH CARD */
+    .auth-card {
+      position: relative; width: 100%; max-width: 880px; min-height: 560px;
+      background: var(--navy-mid); border: 1px solid var(--border); border-radius: 20px;
+      overflow: hidden; display: flex;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+      animation: cardIn 0.6s var(--ease-out) 0.15s both;
+    }
+    @keyframes cardIn { from { opacity:0; transform: translateY(24px) scale(0.98); } to { opacity:1; transform:none; } }
+
+    /* FORMS SIDE */
+    .forms-side { flex: 1; position: relative; overflow: hidden; }
+    .form-panel {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 3rem 2.5rem;
+      transition: transform 0.55s var(--ease-out), opacity 0.4s ease;
+    }
+    .form-panel.login-panel { transform: translateX(0); opacity: 1; }
+    .form-panel.register-panel { transform: translateX(100%); opacity: 0; }
+    .auth-card.show-register .form-panel.login-panel { transform: translateX(-100%); opacity: 0; }
+    .auth-card.show-register .form-panel.register-panel { transform: translateX(0); opacity: 1; }
+
+    .form-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); margin-bottom: 0.5rem; }
+    .form-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 0.04em; line-height: 1; margin-bottom: 0.4rem; }
+    .form-subtitle { font-size: 0.84rem; color: var(--muted); margin-bottom: 1.8rem; font-weight: 300; }
+
+    .input-group { position: relative; margin-bottom: 1rem; }
+    .input-group input {
+      width: 100%; padding: 13px 46px 13px 16px;
+      background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem; color: var(--white); outline: none;
+      transition: border-color 0.22s, background 0.22s, box-shadow 0.22s;
+    }
+    .input-group input::placeholder { color: var(--muted); }
+    .input-group input:focus {
+      border-color: rgba(232,50,26,0.5);
+      background: var(--input-bg-focus);
+      box-shadow: 0 0 0 3px rgba(232,50,26,0.1);
+    }
+    .input-group i {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 1.1rem; color: var(--muted); pointer-events: none;
+      transition: color 0.22s;
+    }
+    .input-group:focus-within i { color: rgba(232,50,26,0.7); }
+
+    .forgot-row { display: flex; justify-content: flex-end; margin: -0.4rem 0 1rem; }
+    .forgot-row a {
+      font-size: 0.8rem; color: var(--muted); text-decoration: none;
+      transition: color 0.2s; position: relative;
+    }
+    .forgot-row a:hover { color: var(--white); }
+
+    .btn-primary {
+      width: 100%; padding: 13px; background: var(--red); color: #fff; border: none;
+      border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer;
+      text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;
+      position: relative; overflow: hidden;
+      transition: background 0.2s, transform 0.22s var(--ease-out), box-shadow 0.22s;
+    }
+    .btn-primary::after {
+      content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.14);
+      opacity: 0; transform: scale(0.7);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(232,50,26,0.3); }
+    .btn-primary:active::after { opacity: 1; transform: scale(1); }
+
+    .divider { display: flex; align-items: center; gap: 10px; margin: 1.2rem 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .divider span { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+
+    .social-row { display: flex; justify-content: center; gap: 10px; }
+    .social-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; background: var(--input-bg); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--muted); font-size: 1.3rem; text-decoration: none;
+      transition: border-color 0.22s, color 0.22s, background 0.22s, transform 0.22s var(--ease-out);
+    }
+    .social-btn:hover { border-color: var(--border-hover); color: var(--white); background: var(--input-bg-focus); transform: translateY(-3px); }
+
+    /* BRAND SIDE */
+    .brand-side {
+      width: 300px; flex-shrink: 0;
+      background: linear-gradient(160deg, #1A0A0A, #2A0D08 40%, #0A0F1E);
+      border-left: 1px solid rgba(232,50,26,0.2);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 2.5rem 2rem; text-align: center; position: relative; overflow: hidden;
+    }
+    .brand-side::before {
+      content: 'RESQ'; position: absolute;
+      font-family: 'Bebas Neue', sans-serif; font-size: 9rem; color: rgba(232,50,26,0.05);
+      line-height: 1; letter-spacing: 0.05em; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); pointer-events: none; white-space: nowrap;
+      animation: bgPulse 4s ease-in-out infinite;
+    }
+    @keyframes bgPulse {
+      0%,100% { color: rgba(232,50,26,0.05); }
+      50% { color: rgba(232,50,26,0.1); }
+    }
+    .brand-side .brand-logo {
+      width: 72px; height: 72px; border-radius: 14px; object-fit: contain; margin-bottom: 1.2rem;
+      position: relative; z-index: 1; border: 1px solid rgba(232,50,26,0.3);
+      transition: transform 0.35s var(--ease-out), box-shadow 0.35s ease;
+    }
+    .brand-side .brand-logo:hover { transform: scale(1.08) rotate(-2deg); box-shadow: 0 16px 40px rgba(232,50,26,0.25); }
+    .brand-side-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.06em; position: relative; z-index: 1; margin-bottom: 0.5rem; }
+    .brand-side-title span { color: var(--red); }
+    .brand-side-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.7; font-weight: 300; position: relative; z-index: 1; margin-bottom: 1.8rem; }
+    .switch-prompt { position: relative; z-index: 1; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .btn-switch {
+      position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center;
+      width: 100%; padding: 11px; background: transparent; color: var(--white);
+      border: 1px solid rgba(244,241,236,0.25); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer;
+      transition: background 0.22s, border-color 0.22s, transform 0.22s var(--ease-out);
+    }
+    .btn-switch:hover { background: rgba(255,255,255,0.08); border-color: rgba(244,241,236,0.4); transform: translateY(-2px); }
+
+    .live-badge {
+      position: relative; z-index: 1;
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(232,50,26,0.12); border: 1px solid rgba(232,50,26,0.3);
+      border-radius: 50px; padding: 5px 12px; font-size: 0.7rem; color: #FF7A63;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .live-dot { width: 6px; height: 6px; background: var(--red); border-radius: 50%; animation: pulse 1.4s infinite; }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); box-shadow: 0 0 0 0 rgba(232,50,26,0.6); }
+      50% { opacity:0.9; transform:scale(1.2); box-shadow: 0 0 0 5px rgba(232,50,26,0); }
     }
 
-    .health-form .input-box {
-      margin: 15px 0;
+    /* MODAL */
+    .overlay-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
+      z-index: 500; align-items: center; justify-content: center; padding: 1.5rem;
     }
-
-    .health-form .input-box input,
-    .health-form .input-box textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
+    .overlay-backdrop.show { display: flex; animation: backdropIn 0.22s ease; }
+    @keyframes backdropIn { from { opacity:0; } to { opacity:1; } }
+    .modal-box {
+      background: var(--navy-mid); border: 1px solid var(--border); border-radius: 16px;
+      padding: 2rem; max-width: 460px; width: 100%;
+      animation: modalIn 0.4s var(--ease-out) both;
     }
-
-    .health-form .input-box i {
-      display: none; /* No icon for health inputs */
+    @keyframes modalIn { from { opacity:0; transform: scale(0.88) translateY(20px); } to { opacity:1; transform:none; } }
+    .modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 0.4rem; }
+    .modal-icon { width: 44px; height: 44px; background: rgba(232,50,26,0.12); border: 1px solid rgba(232,50,26,0.25); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.04em; }
+    .modal-title span { color: var(--red); }
+    .modal-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.65; margin-bottom: 1.4rem; }
+    .modal-input-group { position: relative; margin-bottom: 0.9rem; }
+    .modal-input-group label { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+    .modal-input-group input, .modal-input-group textarea {
+      width: 100%; padding: 12px 16px; background: var(--input-bg);
+      border: 1px solid var(--border); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--white); outline: none;
+      resize: none; transition: border-color 0.22s, box-shadow 0.22s;
     }
-
-    .health-form button {
-      width: 100%;
-      height: 48px;
-      background: #28a745;
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 20px;
+    .modal-input-group input::placeholder, .modal-input-group textarea::placeholder { color: var(--muted); }
+    .modal-input-group input:focus, .modal-input-group textarea:focus { border-color: rgba(232,50,26,0.5); box-shadow: 0 0 0 3px rgba(232,50,26,0.1); }
+    .btn-modal-submit {
+      width: 100%; padding: 13px; background: var(--red); color: #fff; border: none;
+      border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; margin-top: 0.5rem;
+      transition: background 0.2s, transform 0.22s var(--ease-out), box-shadow 0.22s;
     }
+    .btn-modal-submit:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(232,50,26,0.3); }
 
-    .health-form button:hover {
-      background: #218838;
+    /* TOAST */
+    .toast {
+      display: none; position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      z-index: 600; background: var(--navy-mid); border: 1px solid rgba(34,197,94,0.3);
+      border-left: 3px solid #22c55e; border-radius: 10px; padding: 1rem 1.5rem;
+      font-size: 0.88rem; color: var(--white); align-items: center; gap: 10px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4); white-space: nowrap;
     }
+    .toast.show { display: flex; animation: toastIn 0.45s var(--ease-out) both; }
+    @keyframes toastIn { from { opacity:0; transform: translate(-50%, 20px); } to { opacity:1; transform: translate(-50%, 0); } }
+    .toast-icon { font-size: 1.2rem; color: #22c55e; }
 
-    .alert-popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #d4edda;
-      color: #155724;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      z-index: 1001;
-      text-align: center;
-      font-weight: bold;
+    /* RESPONSIVE */
+    @media (max-width: 780px) {
+      .auth-card { flex-direction: column; max-width: 460px; min-height: auto; }
+      .brand-side { width: 100%; border-left: none; border-top: 1px solid rgba(232,50,26,0.2); padding: 2rem; order: 2; }
+      .brand-side::before { font-size: 6rem; }
+      .forms-side { min-height: 480px; order: 1; }
     }
-
-    .alert-popup.active {
-      display: block;
-    }
-
-    /* Ensure the login link button matches the button style */
-    .login-link {
-      width: 100%;
-      height: 48px;
-      background: #7494ec;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      color: #fff;
-      font-weight: 600;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    .login-link:hover {
-      background: #5a73d6;
+    @media (max-width: 480px) {
+      .form-panel { padding: 2rem 1.4rem; }
+      .brand-side { padding: 1.5rem 1.2rem; }
+      .navbar { padding: 0 1.2rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="form-box login">
-      <form action="#" id="loginForm">
-        <h1>Login</h1>
-        <div class="input-box">
-          <input type="text" placeholder="Username" required>
-          <i class="bx bxs-user"></i>
+  <div class="bg-layer"></div>
+
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="nav-brand">
+      <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
+      <span class="brand-text">RES<span>Q</span></span>
+    </a>
+    <a href="index.html" class="nav-back">
+      <i class='bx bx-arrow-back'></i> Back to Home
+    </a>
+  </nav>
+
+  <div class="page-wrapper">
+    <div class="auth-card" id="authCard">
+
+      <div class="forms-side">
+        <!-- LOGIN -->
+        <div class="form-panel login-panel">
+          <p class="form-eyebrow">Welcome Back</p>
+          <h1 class="form-title">Sign In</h1>
+          <p class="form-subtitle">Log in to access your RESQ dashboard and alerts.</p>
+          <form id="loginForm" action="#">
+            <div class="input-group">
+              <input type="text" placeholder="Username" required>
+              <i class='bx bxs-user'></i>
+            </div>
+            <div class="input-group">
+              <input type="password" placeholder="Password" required>
+              <i class='bx bxs-lock-alt'></i>
+            </div>
+            <div class="forgot-row"><a href="#">Forgot Password?</a></div>
+            <a href="index.html" class="btn-primary"><i class='bx bx-log-in'></i> Login</a>
+          </form>
+          <div class="divider"><span>or continue with</span></div>
+          <div class="social-row">
+            <a class="social-btn" href="https://accounts.google.com" target="_blank" title="Google"><i class='bx bxl-google'></i></a>
+            <a class="social-btn" href="https://www.facebook.com/login.php/" target="_blank" title="Facebook"><i class='bx bxl-facebook'></i></a>
+            <a class="social-btn" href="https://github.com/login" target="_blank" title="GitHub"><i class='bx bxl-github'></i></a>
+            <a class="social-btn" href="https://www.linkedin.com/login" target="_blank" title="LinkedIn"><i class='bx bxl-linkedin'></i></a>
+          </div>
         </div>
-        <div class="input-box">
-          <input type="password" placeholder="password" required>
-          <i class="bx bxs-lock-alt"></i>
+
+        <!-- REGISTER -->
+        <div class="form-panel register-panel">
+          <p class="form-eyebrow">Join RESQ</p>
+          <h1 class="form-title">Create Account</h1>
+          <p class="form-subtitle">Sign up to volunteer, earn Qpoints, and help your community.</p>
+          <form id="registerForm" action="#">
+            <div class="input-group">
+              <input type="text" placeholder="Username" required>
+              <i class='bx bxs-user'></i>
+            </div>
+            <div class="input-group">
+              <input type="email" placeholder="Email Address" required>
+              <i class='bx bxs-envelope'></i>
+            </div>
+            <div class="input-group">
+              <input type="password" placeholder="Password" required>
+              <i class='bx bxs-lock-alt'></i>
+            </div>
+            <button type="submit" class="btn-primary"><i class='bx bx-user-plus'></i> Create Account</button>
+          </form>
+          <div class="divider"><span>or continue with</span></div>
+          <div class="social-row">
+            <a class="social-btn" href="https://accounts.google.com" target="_blank" title="Google"><i class='bx bxl-google'></i></a>
+            <a class="social-btn" href="https://www.facebook.com/login.php/" target="_blank" title="Facebook"><i class='bx bxl-facebook'></i></a>
+            <a class="social-btn" href="https://github.com/login" target="_blank" title="GitHub"><i class='bx bxl-github'></i></a>
+            <a class="social-btn" href="https://www.linkedin.com/login" target="_blank" title="LinkedIn"><i class='bx bxl-linkedin'></i></a>
+          </div>
         </div>
-        <div class="forgot-link">
-          <a href="#">Forgot Password?</a>
+      </div>
+
+      <!-- BRAND SIDE -->
+      <div class="brand-side">
+        <div class="live-badge"><span class="live-dot"></span>Live Network</div>
+        <img src="./images/RESQ.jpg" alt="RESQ" class="brand-logo">
+        <h2 class="brand-side-title">RES<span>Q</span></h2>
+        <p class="brand-side-desc">Real-time disaster response. Volunteer. Help. Earn Qpoints. Make a difference.</p>
+        <div id="switchToRegister">
+          <p class="switch-prompt">Don't have an account?</p>
+          <button class="btn-switch" id="showRegister">Create Account →</button>
         </div>
-        <a href="index.html" class="login-link" id="loginLink">Login</a> 
-        <p>or login with social platforms</p>
-        <div class="social-icons">
-          <a href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Faccounts.google.com%2F&followup=https%3A%2F%2Faccounts.google.com%2F&ifkv=AXH0vVsZiCKbVd0T_Zja1ejzWcHODQTbh2AxxmJ0SsJb40K-ZjABXTo5YdsNM44hrWjJ4qGShwdt&passive=1209600&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S-737085355%3A1744397052125368"><i class="bx bxl-google"></i></a>
-          <a href="https://www.facebook.com/login.php/"><i class="bx bxl-facebook"></i></a>
-          <a href="https://github.com/login"><i class="bx bxl-github"></i></a>
-          <a href="https://www.linkedin.com/login"><i class="bx bxl-linkedin"></i></a>
+        <div id="switchToLogin" style="display:none;">
+          <p class="switch-prompt">Already have an account?</p>
+          <button class="btn-switch" id="showLogin">← Sign In</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEALTH MODAL -->
+  <div class="overlay-backdrop" id="healthOverlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-icon">🏥</div>
+        <h2 class="modal-title">Health <span>Info</span></h2>
+      </div>
+      <p class="modal-desc">Help us help you better. This information lets volunteers and responders know about any medical needs during an emergency. All data is kept private and secure.</p>
+      <form id="healthInfoForm">
+        <div class="modal-input-group"><label>Allergies</label><input type="text" placeholder="e.g. Peanuts, Pollen, Penicillin"></div>
+        <div class="modal-input-group"><label>Chronic Conditions</label><input type="text" placeholder="e.g. Diabetes, Asthma, Hypertension"></div>
+        <div class="modal-input-group"><label>Other Medical Notes</label><textarea placeholder="e.g. Current medications, mobility limitations, special needs…" rows="3"></textarea></div>
+        <button type="submit" class="btn-modal-submit">Save & Continue →</button>
       </form>
     </div>
-    <div class="form-box register">
-      <form action="#" id="registerForm">
-        <h1>Registration</h1>
-        <div class="input-box">
-          <input type="text" placeholder="Username" required>
-          <i class="bx bxs-user"></i>
-        </div>
-        <div class="input-box">
-          <input type="email" placeholder="Email" required>
-          <i class="bx bxs-envelope"></i>
-        </div>
-        <div class="input-box">
-          <input type="password" placeholder="Password" required>
-          <i class="bx bxs-lock-alt"></i>
-        </div>
-        <button type="submit" class="btn">Register</button>
-        <p>or register with social platforms</p>
-        <div class="social-icons">
-          <a href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Faccounts.google.com%2F&followup=https%3A%2F%2Faccounts.google.com%2F&ifkv=AXH0vVsZiCKbVd0T_Zja1ejzWcHODQTbh2AxxmJ0SsJb40K-ZjABXTo5YdsNM44hrWjJ4qGShwdt&passive=1209600&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S-737085355%3A1744397052125368"><i class="bx bxl-google"></i></a>
-          <a href="https://www.facebook.com/login.php/"><i class="bx bxl-facebook"></i></a>
-          <a href="https://github.com/login"><i class="bx bxl-github"></i></a>
-          <a href="https://www.linkedin.com/login"><i class="bx bxl-linkedin"></i></a>
-        </div>
-      </form>
-    </div>
-    <div class="toggle-box">
-      <div class="toggle-panel toggle-left">
-        <h1>Hello, Welcome!</h1>
-        <p>Don't have an account?</p>
-        <button class="btn register-btn">Register</button>
-      </div>
-      <div class="toggle-panel toggle-right">
-        <h1>Welcome Back!</h1>
-        <p>Already have an account?</p>
-        <button class="btn login-btn">Login</button>
-      </div>
-    </div>
   </div>
 
-  <!-- Health Form -->
-  <div class="health-form" id="healthForm">
-    <h2>Health Information</h2>
-    <form id="healthInfoForm">
-      <div class="input-box">
-        <input type="text" placeholder="Allergies (e.g., Peanuts, Pollen)" required>
-      </div>
-      <div class="input-box">
-        <input type="text" placeholder="Chronic Diseases (e.g., Diabetes, Asthma)">
-      </div>
-      <div class="input-box">
-        <textarea placeholder="Other Health Concerns (e.g., Medications, Conditions)" rows="3"></textarea>
-      </div>
-      <button type="submit">Submit Health Info</button>
-    </form>
+  <div class="toast" id="successToast">
+    <span class="toast-icon">✓</span>
+    Profile created successfully — welcome to RESQ!
   </div>
 
-  <!-- Success Alert Popup -->
-  <div class="alert-popup" id="successPopup">
-    We have successfully received your data!
-  </div>
-
-  <script src="./js/ppj.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const container = document.querySelector('.container');
-      const registerBtn = document.querySelector('.register-btn');
-      const loginBtn = document.querySelector('.login-btn');
-      const registerForm = document.getElementById('registerForm');
-      const healthForm = document.getElementById('healthForm');
-      const healthInfoForm = document.getElementById('healthInfoForm');
-      const successPopup = document.getElementById('successPopup');
+    const authCard = document.getElementById('authCard');
+    const showRegBtn = document.getElementById('showRegister');
+    const showLogBtn = document.getElementById('showLogin');
+    const switchToReg = document.getElementById('switchToRegister');
+    const switchToLog = document.getElementById('switchToLogin');
+    const registerForm = document.getElementById('registerForm');
+    const healthOverlay = document.getElementById('healthOverlay');
+    const healthInfoForm = document.getElementById('healthInfoForm');
+    const successToast = document.getElementById('successToast');
 
-      registerBtn.addEventListener('click', () => {
-        container.classList.add('active');
-      });
-
-      loginBtn.addEventListener('click', () => {
-        container.classList.remove('active');
-      });
-
-      // Handle registration form submission
-      registerForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        healthForm.classList.add('active'); // Show health form after registration
-        registerForm.reset(); // Clear registration form
-      });
-
-      // Handle health form submission
-      healthInfoForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const allergies = healthInfoForm.querySelector('input[placeholder="Allergies (e.g., Peanuts, Pollen)"]').value;
-        const diseases = healthInfoForm.querySelector('input[placeholder="Chronic Diseases (e.g., Diabetes, Asthma)"]').value;
-        const concerns = healthInfoForm.querySelector('textarea[placeholder="Other Health Concerns (e.g., Medications, Conditions)"]').value;
-
-        // Simulate data storage (in a real app, send to a server)
-        console.log('Allergies:', allergies);
-        console.log('Diseases:', diseases);
-        console.log('Concerns:', concerns);
-
-        healthForm.classList.remove('active'); // Hide health form
-        successPopup.classList.add('active'); // Show success popup
-
-        // Hide popup after 3 seconds
-        setTimeout(() => {
-          successPopup.classList.remove('active');
-        }, 3000);
-      });
+    // Page exit
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || a.target === '_blank') return;
+      e.preventDefault();
+      document.body.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+      document.body.style.opacity = '0';
+      document.body.style.transform = 'translateY(-6px)';
+      setTimeout(() => window.location.href = href, 280);
     });
+
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+    // Auth toggle
+    showRegBtn.addEventListener('click', () => {
+      authCard.classList.add('show-register');
+      switchToReg.style.display = 'none';
+      switchToLog.style.display = 'block';
+    });
+    showLogBtn.addEventListener('click', () => {
+      authCard.classList.remove('show-register');
+      switchToReg.style.display = 'block';
+      switchToLog.style.display = 'none';
+    });
+
+    // Register → health form
+    registerForm.addEventListener('submit', e => {
+      e.preventDefault();
+      healthOverlay.classList.add('show');
+      registerForm.reset();
+    });
+
+    // Health submit → toast
+    healthInfoForm.addEventListener('submit', e => {
+      e.preventDefault();
+      healthOverlay.classList.remove('show');
+      successToast.classList.add('show');
+      setTimeout(() => successToast.classList.remove('show'), 3500);
+      healthInfoForm.reset();
+    });
+
+    // Close modal on backdrop / Escape
+    healthOverlay.addEventListener('click', e => { if (e.target === healthOverlay) healthOverlay.classList.remove('show'); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') healthOverlay.classList.remove('show'); });
   </script>
 </body>
 </html>
