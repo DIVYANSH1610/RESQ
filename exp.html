@@ -3,147 +3,550 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About RESQ - Explore</title>
+  <title>Explore RESQ — About & Mission</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --red: #E8321A; --red-dark: #B52411; --amber: #F5A623;
+      --navy: #0A0F1E; --navy-mid: #111827; --navy-light: #1C2436;
+      --white: #F4F1EC; --muted: rgba(244,241,236,0.55);
+      --border: rgba(244,241,236,0.12); --border-hover: rgba(244,241,236,0.25);
+      --gold: #F5C842; --gold-dim: rgba(245,200,66,0.15);
+      --ease-out: cubic-bezier(0.22,1,0.36,1);
     }
 
+    /* ── SMOOTH BASE ── */
+    html { scroll-behavior: smooth; }
     body {
-    background: url('./images/explore.jpg') center center fixed;
-    background-size: cover;
-    color: #fff;
-    line-height: 1.6;
-    backdrop-filter: brightness(0.4);
-}
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 50px;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.logo {
-  height: 70px;
-  border: none;
-  border-radius: 2px;
-  
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
-
-.nav-links li a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 16px;
-  transition: color 0.3s;
-}
-
-.nav-links li a:hover {
-  color: #00b4d8;
-}
-
-
-
-.nav-links.active {
-  display: flex;
-}
-
-
-    header {
-
-      color: #fff;
-      padding: 20px 40px;
-      text-align: center;
-      font-weight: 500;
-      font-size: larger;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy); color: var(--white);
+      overflow-x: hidden;
+      animation: pageIn 0.45s ease both;
     }
+    @keyframes pageIn { from { opacity:0; } to { opacity:1; } }
+    body.page-exit { animation: pageOut 0.28s ease forwards; pointer-events: none; }
+    @keyframes pageOut { to { opacity:0; transform: translateY(-6px); } }
 
-    .container {
-      padding: 40px 20px;
-      max-width: 900px;
-      margin: auto;
-      background-color: rgba(0, 0, 0, 0.5);
-      border-radius: 12px;
+    ::selection { background: rgba(232,50,26,0.3); color: #F4F1EC; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(232,50,26,0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(232,50,26,0.55); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.65s var(--ease-out), transform 0.65s var(--ease-out);
     }
+    .reveal.revealed { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: 0.08s; }
+    .reveal-d2 { transition-delay: 0.16s; }
+    .reveal-d3 { transition-delay: 0.24s; }
+    .reveal-d4 { transition-delay: 0.32s; }
+    .reveal-d5 { transition-delay: 0.40s; }
+    .reveal-d6 { transition-delay: 0.48s; }
 
-    h1 {
-      text-align: right;
-      margin-bottom: 10px;
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 68px;
+      background: rgba(10,15,30,0.82); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     }
-
-    h2 {
-      margin-top: 30px;
-      color: #f1f1f1;
+    .navbar.scrolled {
+      height: 56px;
+      background: rgba(10,15,30,0.97);
+      box-shadow: 0 4px 28px rgba(0,0,0,0.45);
     }
-
-    p {
-      margin: 15px 0;
-      color: #e0e0e0;
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo { height: 40px; border-radius: 6px; object-fit: contain; transition: transform 0.3s var(--ease-out); }
+    .logo:hover { transform: scale(1.06); }
+    .brand-text { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.06em; color: var(--white); }
+    .brand-text span { color: var(--red); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted); font-size: 0.88rem; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase; position: relative;
+      transition: color 0.22s ease;
     }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px; background: var(--red);
+      transition: width 0.28s var(--ease-out);
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .nav-signin {
+      background: var(--red) !important; color: var(--white) !important;
+      padding: 6px 16px; border-radius: 6px;
+      transition: background 0.2s ease, transform 0.18s var(--ease-out) !important;
+    }
+    .nav-signin:hover { background: var(--red-dark) !important; transform: translateY(-2px) !important; }
+    .nav-signin::after { display: none !important; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--white); border-radius: 2px;
+      transition: all 0.3s var(--ease-out);
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
 
-    footer {
-      background-color: rgba(0, 0, 0, 0.7);
-      color: #fff;
-      text-align: center;
-      padding: 15px;
-      margin-top: 40px;
+    /* ── PAGE HERO ── */
+    .page-hero {
+      position: relative; padding-top: 68px; min-height: 440px;
+      display: flex; align-items: flex-end; overflow: hidden;
+    }
+    .page-hero-bg {
+      position: absolute; inset: 0;
+      background: url('./images/explore.jpg') center center / cover no-repeat;
+      transform: scale(1.04);
+      animation: slowZoom 22s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    @keyframes slowZoom { from { transform: scale(1.04); } to { transform: scale(1.10); } }
+    .page-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(10,15,30,0.5) 0%, rgba(10,15,30,0.9) 75%, var(--navy) 100%);
+    }
+    .page-hero-content {
+      position: relative; z-index: 2; padding: 3rem 2.5rem;
+      max-width: 1200px; width: 100%; margin: 0 auto;
+      animation: heroIn 0.9s var(--ease-out) 0.1s both;
+    }
+    @keyframes heroIn { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform:none; } }
+    .page-eyebrow {
+      font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--red); font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 0.8rem;
+    }
+    .page-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--red); }
+    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.8rem,8vw,5.5rem); line-height: 0.95; letter-spacing: 0.03em; }
+    .page-title span { color: var(--red); }
+    .page-hero-sub { margin-top: 1rem; font-size: 1rem; color: var(--muted); font-weight: 300; max-width: 500px; line-height: 1.7; }
+
+    /* ── TICKER ── */
+    .ticker-bar { background: var(--red); padding: 8px 0; overflow: hidden; white-space: nowrap; }
+    .ticker-bar:hover .ticker-inner { animation-play-state: paused; }
+    .ticker-inner { display: inline-flex; animation: ticker 30s linear infinite; }
+    .ticker-item {
+      display: inline-flex; align-items: center; gap: 10px; padding: 0 2.5rem;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+      cursor: default;
+    }
+    .ticker-item::before { content: '⚠'; font-size: 0.75rem; }
+    .ticker-sep { color: rgba(255,255,255,0.4); padding: 0 0.4rem; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .divider-bar { height: 3px; background: linear-gradient(to right, var(--red), transparent); max-width: 1200px; margin: 0 auto; }
+
+    /* ── LAYOUT ── */
+    .content-wrapper {
+      max-width: 1200px; margin: 0 auto; padding: 4rem 2.5rem 6rem;
+      display: grid; grid-template-columns: 1fr 340px; gap: 3rem; align-items: start;
+    }
+    .section-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); margin-bottom: 0.5rem; }
+    .section-heading { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.8rem,4vw,2.6rem); letter-spacing: 0.04em; line-height: 1.05; margin-bottom: 1.2rem; }
+    .section-heading span { color: var(--red); }
+    .about-text { font-size: 1rem; color: var(--muted); line-height: 1.85; margin-bottom: 1.5rem; font-weight: 300; }
+
+    .mission-strip {
+      background: linear-gradient(135deg, rgba(232,50,26,0.1), rgba(232,50,26,0.03));
+      border: 1px solid rgba(232,50,26,0.25); border-left: 3px solid var(--red);
+      border-radius: 0 10px 10px 0; padding: 1.4rem 1.6rem; margin: 2rem 0;
+      transition: border-color 0.3s ease, background 0.3s ease;
+    }
+    .mission-strip:hover { border-color: rgba(232,50,26,0.45); background: linear-gradient(135deg, rgba(232,50,26,0.15), rgba(232,50,26,0.05)); }
+    .mission-strip p { font-size: 0.95rem; color: var(--white); line-height: 1.75; font-weight: 300; }
+    .mission-strip strong { color: #FF7A63; font-weight: 600; }
+
+    /* ── FEATURES ── */
+    .features-heading { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.04em; margin: 2.5rem 0 1.2rem; }
+    .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .feature-card {
+      background: var(--navy-mid); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1.2rem 1.3rem; position: relative; overflow: hidden;
+      transition: border-color 0.28s ease, transform 0.28s var(--ease-out), box-shadow 0.28s ease;
+      cursor: default;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--red); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s var(--ease-out);
+    }
+    .feature-card:hover { border-color: rgba(244,241,236,0.22); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-card.gold-card { background: linear-gradient(135deg, #1A1506, #221B06); border-color: rgba(245,200,66,0.25); }
+    .feature-card.gold-card::before { background: var(--gold); }
+    .feature-badge {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; background: rgba(232,50,26,0.12);
+      color: #FF7A63; border: 1px solid rgba(232,50,26,0.25); border-radius: 20px;
+      padding: 3px 9px; margin-bottom: 0.6rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .feature-card:hover .feature-badge { background: rgba(232,50,26,0.2); border-color: rgba(232,50,26,0.4); }
+    .feature-badge.gold { background: var(--gold-dim); color: var(--gold); border-color: rgba(245,200,66,0.3); }
+    .feature-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.15rem; letter-spacing: 0.05em; color: var(--white); margin-bottom: 0.35rem; }
+    .feature-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── QPOINTS ── */
+    .qpoints-section { margin-top: 3rem; }
+    .qpoints-banner {
+      background: linear-gradient(135deg, #15110A, #231A05 60%, #1A1506);
+      border: 1px solid rgba(245,200,66,0.3); border-radius: 14px; padding: 2rem;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .qpoints-banner:hover { border-color: rgba(245,200,66,0.5); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+    .qpoints-banner::before {
+      content: 'Q'; position: absolute; right: -10px; top: -20px;
+      font-family: 'Bebas Neue', sans-serif; font-size: 10rem; color: rgba(245,200,66,0.06);
+      line-height: 1; pointer-events: none;
+      transition: color 0.4s ease;
+    }
+    .qpoints-banner:hover::before { color: rgba(245,200,66,0.1); }
+    .qpoints-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+    .qpoints-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.6rem,4vw,2.2rem); letter-spacing: 0.04em; line-height: 1.05; margin-bottom: 0.8rem; }
+    .qpoints-title span { color: var(--gold); }
+    .qpoints-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.75; font-weight: 300; margin-bottom: 1.5rem; max-width: 560px; }
+    .qpoints-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .qstep {
+      background: rgba(245,200,66,0.05); border: 1px solid rgba(245,200,66,0.15);
+      border-radius: 10px; padding: 1rem; text-align: center;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease-out);
+    }
+    .qstep:hover { background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.3); transform: translateY(-3px); }
+    .qstep-num { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--gold); line-height: 1; margin-bottom: 0.4rem; }
+    .qstep-title { font-size: 0.82rem; font-weight: 600; color: var(--white); margin-bottom: 0.3rem; }
+    .qstep-desc { font-size: 0.74rem; color: var(--muted); line-height: 1.55; }
+    .btn-qpoints {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 1.5rem;
+      padding: 12px 24px; background: var(--gold); color: #1A1300; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      cursor: pointer; text-decoration: none;
+      transition: opacity 0.2s, transform 0.22s var(--ease-out), box-shadow 0.22s ease;
+    }
+    .btn-qpoints:hover { opacity: 0.9; transform: translateY(-3px); box-shadow: 0 12px 28px rgba(245,200,66,0.25); }
+
+    /* ── SIDEBAR ── */
+    .sidebar { display: flex; flex-direction: column; gap: 1.2rem; }
+    .sidebar-card {
+      background: var(--navy-mid); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .sidebar-card:hover { border-color: var(--border-hover); box-shadow: 0 8px 28px rgba(0,0,0,0.25); }
+    .sidebar-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.15rem; letter-spacing: 0.05em; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+    .sidebar-card-title .icon {
+      width: 30px; height: 30px; background: rgba(232,50,26,0.12); border: 1px solid rgba(232,50,26,0.25);
+      border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+      transition: background 0.2s, transform 0.25s var(--ease-out);
+    }
+    .sidebar-card:hover .sidebar-card-title .icon { background: rgba(232,50,26,0.2); transform: scale(1.1) rotate(-3deg); }
+    .sidebar-card-title .icon.gold-icon { background: var(--gold-dim); border-color: rgba(245,200,66,0.3); }
+
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 8px; overflow: hidden; }
+    .stat-item { background: var(--navy-light); padding: 1rem; text-align: center; transition: background 0.2s; }
+    .stat-item:hover { background: rgba(28,36,54,0.9); }
+    .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--red); line-height: 1; }
+    .stat-lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 3px; }
+
+    .volunteer-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); transition: padding-left 0.22s var(--ease-out); }
+    .volunteer-item:last-child { border-bottom: none; }
+    .volunteer-item:hover { padding-left: 4px; }
+    .vol-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); margin-top: 6px; flex-shrink: 0; transition: transform 0.2s var(--ease-out); }
+    .volunteer-item:hover .vol-dot { transform: scale(1.4); }
+    .vol-label { font-size: 0.84rem; font-weight: 600; color: var(--white); margin-bottom: 2px; }
+    .vol-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+    .reward-list { display: flex; flex-direction: column; gap: 8px; }
+    .reward-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px;
+      transition: background 0.2s, border-color 0.2s, transform 0.22s var(--ease-out);
+    }
+    .reward-row:hover { background: rgba(255,255,255,0.07); border-color: var(--border-hover); transform: translateX(4px); }
+    .reward-name { font-size: 0.82rem; color: var(--white); }
+    .reward-pts { font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; color: var(--gold); letter-spacing: 0.06em; }
+
+    .cta-card { background: linear-gradient(135deg, #1A0A0A, #2A0D08) !important; border-color: rgba(232,50,26,0.35) !important; }
+    .cta-card p { font-size: 0.84rem; color: var(--muted); line-height: 1.65; margin-bottom: 1.1rem; }
+
+    .btn-cta {
+      display: block; width: 100%; padding: 12px; background: var(--red); color: #fff; border: none;
+      border-radius: 8px; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer; text-align: center; text-decoration: none; margin-bottom: 0.6rem;
+      transition: background 0.2s, transform 0.22s var(--ease-out), box-shadow 0.22s ease;
+      position: relative; overflow: hidden;
+    }
+    .btn-cta::after {
+      content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.12);
+      opacity: 0; transform: scale(0.8);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .btn-cta:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(232,50,26,0.3); }
+    .btn-cta:active::after { opacity: 1; transform: scale(1); }
+
+    .btn-cta-outline {
+      display: block; width: 100%; padding: 11px; background: transparent; color: var(--white);
+      border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; text-align: center;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.22s var(--ease-out);
+    }
+    .btn-cta-outline:hover { background: rgba(255,255,255,0.07); border-color: var(--border-hover); transform: translateY(-2px); }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem 2.5rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+    footer span { color: var(--red); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 900px) {
+      .content-wrapper { grid-template-columns: 1fr; }
+      .sidebar { display: grid; grid-template-columns: 1fr 1fr; }
+      .qpoints-steps { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .navbar { padding: 0 1.2rem; }
+      .nav-links {
+        display: none; position: fixed; inset: 0; top: 68px;
+        background: rgba(10,15,30,0.97); backdrop-filter: blur(16px);
+        flex-direction: column; align-items: center; justify-content: center;
+        gap: 2.5rem; z-index: 99;
+        animation: none !important;
+      }
+      .nav-links.open { display: flex; animation: menuIn 0.3s var(--ease-out) !important; }
+      @keyframes menuIn { from { opacity:0; transform: scale(0.97); } to { opacity:1; transform:none; } }
+      .nav-links a { font-size: 1.2rem; }
+      .hamburger { display: flex; }
+      .page-hero-content { padding: 2rem 1.2rem; }
+      .content-wrapper { padding: 2.5rem 1.2rem 4rem; gap: 2rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .qpoints-steps { grid-template-columns: 1fr; }
+      .sidebar { display: flex; flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar">
-    <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
-    <header>
-      <h1>Explore RESQ</h1>
 
-    </header>
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="nav-brand">
+      <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
+      <span class="brand-text">RES<span>Q</span></span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="sos.html">SOS</a></li>
+      <li><a href="Qchat.html">Qchat</a></li>
+      <li><a href="service.html">Services</a></li>
+      <li><a href="ppj.html" class="nav-signin">Sign In</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
 
-<ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="sos.html">SOS</a></li>
-    <li><a href="Qchat.html">Qchat</a></li>
-    <li><a href="service.html">Services</a></li>
-    <li><a href="ppj.html">Sign In</a></li>
-</ul>
-</nav>
-  
+  <section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <p class="page-eyebrow">Who We Are</p>
+      <h1 class="page-title">EXPLORE<br><span>RESQ</span></h1>
+      <p class="page-hero-sub">A people-powered disaster response network — built for the community, run by the community.</p>
+    </div>
+  </section>
 
-  <div class="container">
-    <h2>About RESQ</h2>
-    <p>
-      RESQ is a real-time disaster response and evacuation platform designed to help civilians during emergencies by providing intelligent evacuation routes, rapid SOS assistance, and a live volunteer network. Powered by Groq AI and Fluvio streaming, it ensures users receive timely help, accurate updates, and a reliable connection to safety.
-    </p>
+  <div class="ticker-bar">
+    <div class="ticker-inner">
+      <span class="ticker-item">Flood Alert — City A — Evacuation in Progress</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Earthquake Warning — Region B — Stay Indoors</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Cyclone Watch — Coastal Zone C — Prepare Now</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">NDRF Deployed — District D — Rescue Ongoing</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Flood Alert — City A — Evacuation in Progress</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Earthquake Warning — Region B — Stay Indoors</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">Cyclone Watch — Coastal Zone C — Prepare Now</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item">NDRF Deployed — District D — Rescue Ongoing</span>
+      <span class="ticker-sep">|</span>
+    </div>
+  </div>
+  <div class="divider-bar"></div>
 
-    <h2>Our Mission</h2>
-    <p>
-      We aim to reduce chaos, misinformation, and isolation during disasters. By combining real-time AI and live data streaming, RESQ bridges the gap between victims and responders with speed, clarity, and trust.
-    </p>
+  <div class="content-wrapper">
+    <div class="about-block">
+      <p class="section-label reveal">About RESQ</p>
+      <h2 class="section-heading reveal reveal-d1">Community-Driven<br><span>Disaster Response</span></h2>
+      <p class="about-text reveal reveal-d2">
+        RESQ is a real-time disaster response platform that connects people in crisis with trained volunteers, emergency services, and verified safe zones — the moment they need it most. We believe the fastest responder is often the one already in the community.
+      </p>
+      <div class="mission-strip reveal reveal-d3">
+        <p><strong>Our Mission —</strong> To reduce chaos, isolation, and misinformation during disasters by building a trusted network of volunteers and civilians who respond together with <strong>speed, compassion, and coordination.</strong></p>
+      </div>
 
-    <h2>Core Features</h2>
-    <p><strong>AutoQ:</strong> Intelligent routing to safe zones.</p>
-    <p><strong>Q-Link:</strong> Live connection between users and volunteers.</p>
-    <p><strong>SOS Detection:</strong> Fast voice/text alerts analyzed with AI.</p>
-    <p><strong>Quell Zones:</strong> Dynamic safe areas with volunteer presence.</p>
-    <p><strong>Live Tracking:</strong> Real-time updates and location sharing.</p>
+      <h3 class="features-heading reveal">Core Features</h3>
+      <div class="features-grid">
+        <div class="feature-card reveal reveal-d1">
+          <div class="feature-badge">Volunteer</div>
+          <div class="feature-name">Join the Network</div>
+          <p class="feature-desc">Register as a RESQ volunteer and get notified of emergencies near you. Be the first responder your community needs.</p>
+        </div>
+        <div class="feature-card reveal reveal-d2">
+          <div class="feature-badge">SOS</div>
+          <div class="feature-name">Instant SOS Alert</div>
+          <p class="feature-desc">One tap sends your location and situation to nearby volunteers and emergency services simultaneously.</p>
+        </div>
+        <div class="feature-card reveal reveal-d3">
+          <div class="feature-badge">Safety</div>
+          <div class="feature-name">Quell Zones</div>
+          <p class="feature-desc">Live-updated safe gathering points mapped with volunteer presence, capacity, and available supplies.</p>
+        </div>
+        <div class="feature-card reveal reveal-d4">
+          <div class="feature-badge">Communication</div>
+          <div class="feature-name">Q-Chat</div>
+          <p class="feature-desc">Real-time group chat between volunteers and civilians in a disaster zone — even on low-bandwidth connections.</p>
+        </div>
+        <div class="feature-card reveal reveal-d5">
+          <div class="feature-badge">Routing</div>
+          <div class="feature-name">AutoQ Evacuation</div>
+          <p class="feature-desc">Smart evacuation routing that avoids flooded roads, fallen bridges, and blocked paths — updated live.</p>
+        </div>
+        <div class="feature-card gold-card reveal reveal-d6">
+          <div class="feature-badge gold">Rewards</div>
+          <div class="feature-name">Earn Qpoints</div>
+          <p class="feature-desc">Every volunteer action earns Qpoints. Redeem them for real rewards through your personal volunteer dashboard.</p>
+        </div>
+      </div>
 
-    <h2>Powered By</h2>
-    <p><strong>Groq AI:</strong> For instant voice-to-text SOS and emotion detection.</p>
-    
+      <div class="qpoints-section reveal">
+        <div class="qpoints-banner">
+          <p class="qpoints-label">★ Volunteer Rewards Program</p>
+          <h3 class="qpoints-title">Earn <span>Qpoints</span>,<br>Redeem Real Rewards</h3>
+          <p class="qpoints-desc">Every act of help counts — literally. RESQ volunteers earn Qpoints for every mission completed, person assisted, and hour spent on the ground. Accumulate points on your dashboard and redeem them for exclusive rewards, certificates, and community recognition.</p>
+          <div class="qpoints-steps">
+            <div class="qstep"><div class="qstep-num">01</div><div class="qstep-title">Volunteer & Help</div><p class="qstep-desc">Respond to alerts, assist civilians, and complete rescue missions in your area.</p></div>
+            <div class="qstep"><div class="qstep-num">02</div><div class="qstep-title">Earn Qpoints</div><p class="qstep-desc">Points are credited to your dashboard automatically after each verified action.</p></div>
+            <div class="qstep"><div class="qstep-num">03</div><div class="qstep-title">Redeem Rewards</div><p class="qstep-desc">Swap Qpoints for vouchers, gear, certificates, and community honours.</p></div>
+          </div>
+          <a href="service.html" class="btn-qpoints">★ View Rewards Dashboard</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="sidebar-card reveal reveal-d1">
+        <div class="sidebar-card-title"><div class="icon">📊</div>By the Numbers</div>
+        <div class="stat-grid">
+          <div class="stat-item"><div class="stat-value">24/7</div><div class="stat-lbl">Monitoring</div></div>
+          <div class="stat-item"><div class="stat-value">38</div><div class="stat-lbl">Active Alerts</div></div>
+          <div class="stat-item"><div class="stat-value">6</div><div class="stat-lbl">Regions</div></div>
+          <div class="stat-item"><div class="stat-value">112</div><div class="stat-lbl">Emergency</div></div>
+        </div>
+      </div>
+
+      <div class="sidebar-card reveal reveal-d2">
+        <div class="sidebar-card-title"><div class="icon">🤝</div>Why Volunteer?</div>
+        <div class="volunteer-item"><div class="vol-dot"></div><div><div class="vol-label">Save Lives Locally</div><div class="vol-desc">Be the first responder in your neighbourhood when every second matters.</div></div></div>
+        <div class="volunteer-item"><div class="vol-dot"></div><div><div class="vol-label">Build Real Skills</div><div class="vol-desc">Access free first-aid, evacuation, and crisis communication training.</div></div></div>
+        <div class="volunteer-item"><div class="vol-dot"></div><div><div class="vol-label">Earn Recognition</div><div class="vol-desc">Collect Qpoints, badges, and verified certificates for every mission.</div></div></div>
+        <div class="volunteer-item"><div class="vol-dot"></div><div><div class="vol-label">Track Your Impact</div><div class="vol-desc">See the real-world difference you've made through your volunteer dashboard.</div></div></div>
+      </div>
+
+      <div class="sidebar-card reveal reveal-d3">
+        <div class="sidebar-card-title"><div class="icon gold-icon">★</div>Reward Examples</div>
+        <div class="reward-list">
+          <div class="reward-row"><span class="reward-name">First Aid Kit</span><span class="reward-pts">500 QP</span></div>
+          <div class="reward-row"><span class="reward-name">Volunteer Certificate</span><span class="reward-pts">250 QP</span></div>
+          <div class="reward-row"><span class="reward-name">RESQ Gear Pack</span><span class="reward-pts">1000 QP</span></div>
+          <div class="reward-row"><span class="reward-name">Community Hero Badge</span><span class="reward-pts">750 QP</span></div>
+          <div class="reward-row"><span class="reward-name">Food Voucher</span><span class="reward-pts">300 QP</span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-card cta-card reveal reveal-d4">
+        <div class="sidebar-card-title"><div class="icon">🚨</div>Need Help Now?</div>
+        <p>If you or someone near you is in danger, trigger an SOS immediately or call the national helpline at 112.</p>
+        <a href="sos.html" class="btn-cta">⚡ Trigger SOS</a>
+        <a href="service.html" class="btn-cta-outline">Become a Volunteer</a>
+      </div>
+    </div>
   </div>
 
-  <footer>
-    <p>© 2025 RESQ. All rights reserved.</p>
-  </footer>
+  <footer><p>© 2025 <span>RESQ</span> Disaster Management Network. All rights reserved.</p></footer>
 
+  <script>
+    const ease = 'cubic-bezier(0.22,1,0.36,1)';
+
+    // Page exit transitions
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || a.target === '_blank') return;
+      e.preventDefault();
+      document.body.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+      document.body.style.opacity = '0';
+      document.body.style.transform = 'translateY(-6px)';
+      setTimeout(() => window.location.href = href, 280);
+    });
+
+    // Navbar scroll shrink
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // Hamburger
+    const ham = document.getElementById('hamburger');
+    const nav = document.getElementById('navLinks');
+    ham.addEventListener('click', () => {
+      nav.classList.toggle('open');
+      ham.classList.toggle('open');
+    });
+    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      nav.classList.remove('open'); ham.classList.remove('open');
+    }));
+
+    // Scroll reveal
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Counter animation for stat values
+    function animateCount(el) {
+      const raw = el.textContent.trim();
+      const num = parseFloat(raw.replace(/[^\d.]/g, ''));
+      const suffix = raw.replace(/[\d.]/g, '');
+      if (isNaN(num) || num > 9999 || raw === '24/7') return;
+      const t0 = performance.now();
+      const dur = 1100;
+      (function tick(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(e * num) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    }
+    const cio = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { animateCount(e.target); cio.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.stat-value').forEach(el => cio.observe(el));
+
+    // Active nav
+    const page = location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      if (a.getAttribute('href') === page) a.classList.add('active');
+    });
+
+    // Selection highlight
+    document.addEventListener('selectionchange', () => {});
+  </script>
 </body>
 </html>
