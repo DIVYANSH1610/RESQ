@@ -3,693 +3,917 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Emergency SOS Hub</title>
+  <title>RESQ — Emergency SOS Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-    * {
-      font-family: "Poppins", sans-serif;
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red: #E8321A;
+      --red-dark: #B52411;
+      --navy: #0A0F1E;
+      --navy-mid: #111827;
+      --navy-light: #1C2436;
+      --white: #F4F1EC;
+      --muted: rgba(244,241,236,0.55);
+      --border: rgba(244,241,236,0.12);
+      --border-hover: rgba(244,241,236,0.25);
+      --green: #22c55e;
+      --amber: #F5A623;
     }
-    body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: #984c4c;
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
       overflow: hidden;
     }
+
+    /* ── NAVBAR ── */
     .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 300;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 20px 50px;
-      background: rgba(0, 0, 0, 0.5);
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: rgba(10,15,30,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
     }
-    .logo {
-      height: 70px;
-      border: none;
-      border-radius: 2px;
+
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo { height: 38px; border-radius: 6px; object-fit: contain; }
+    .brand-text { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.06em; color: var(--white); }
+    .brand-text span { color: var(--red); }
+
+    .nav-links { display: flex; align-items: center; gap: 1.6rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted); font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; position: relative;
     }
-    .nav-links {
-      list-style: none;
+    .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--red); transition: width 0.25s; }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active { color: var(--white); }
+    .nav-links a.active::after { width: 100%; }
+    .nav-signin { background: var(--red) !important; color: var(--white) !important; padding: 5px 14px; border-radius: 6px; }
+    .nav-signin:hover { background: var(--red-dark) !important; }
+    .nav-signin::after { display: none !important; }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--white); border-radius: 2px; transition: all 0.3s; }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+    /* ── LAYOUT ── */
+    .app-layout {
       display: flex;
-      gap: 20px;
-    }
-    .nav-links li a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-      transition: color 0.3s;
-    }
-    .nav-links li a:hover {
-      color: #00b4d8;
-    }
-    .nav-links.active {
-      display: flex;
-    }
-    .container {
-      display: flex;
-      flex-direction: row;
       height: 100vh;
-      width: 100vw;
+      padding-top: 64px;
     }
+
+    /* ── LEFT PANEL ── */
     .left-panel {
-      width: 350px;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--navy-mid);
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 15px;
       overflow-y: auto;
-      align-items: center;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
     }
-    h1 {
-      color: #ff4444;
-      font-size: 2rem;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-      animation: fadeIn 2s ease-in-out;
-      text-align: center;
+
+    .left-panel::-webkit-scrollbar { width: 4px; }
+    .left-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .panel-header {
+      padding: 1.4rem 1.4rem 1rem;
+      border-bottom: 1px solid var(--border);
     }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+
+    .panel-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 0.3rem;
     }
-    #sosButton {
-      padding: 12px 25px;
-      font-size: 1.1rem;
-      background: linear-gradient(45deg, #ff4444, #cc0000);
-      color: white;
+
+    .panel-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    .panel-body { padding: 1.2rem 1.4rem; display: flex; flex-direction: column; gap: 1rem; }
+
+    /* ── SOS BUTTON ── */
+    .sos-btn-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 0.5rem 0;
+    }
+
+    .sos-btn {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff5c3a, var(--red-dark));
       border: none;
-      border-radius: 25px;
       cursor: pointer;
-      box-shadow: 0 6px 15px rgba(255, 68, 68, 0.4);
-      transition: transform 0.2s, background 0.3s;
+      color: #fff;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.1em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow:
+        0 0 0 8px rgba(232,50,26,0.15),
+        0 0 0 16px rgba(232,50,26,0.07),
+        0 20px 40px rgba(232,50,26,0.4);
+      transition: transform 0.15s, box-shadow 0.2s;
       outline: none;
-      width: 100%;
-      max-width: 250px;
     }
-    #sosButton:hover {
-      background: linear-gradient(45deg, #cc0000, #ff4444);
+
+    .sos-btn i { font-size: 1.6rem; }
+
+    .sos-btn:hover {
       transform: scale(1.05);
+      box-shadow:
+        0 0 0 10px rgba(232,50,26,0.2),
+        0 0 0 20px rgba(232,50,26,0.08),
+        0 24px 50px rgba(232,50,26,0.5);
     }
-    #sosButton:active {
-      transform: scale(0.95);
+
+    .sos-btn:active { transform: scale(0.96); }
+
+    .sos-btn.triggered {
+      animation: sosPulse 1s infinite;
     }
+
+    @keyframes sosPulse {
+      0%, 100% { box-shadow: 0 0 0 8px rgba(232,50,26,0.3), 0 0 0 20px rgba(232,50,26,0.1), 0 20px 40px rgba(232,50,26,0.5); }
+      50% { box-shadow: 0 0 0 16px rgba(232,50,26,0.15), 0 0 0 32px rgba(232,50,26,0.05), 0 24px 50px rgba(232,50,26,0.6); }
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(232,50,26,0.1);
+      border: 1px solid rgba(232,50,26,0.25);
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #FF7A63;
+      letter-spacing: 0.04em;
+    }
+    .status-bar.show { display: flex; animation: fadeUp 0.3s ease both; }
+    .status-bar.success { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.25); color: var(--green); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: blink 1s infinite; flex-shrink: 0; }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── SEARCH ── */
+    .search-wrap { position: relative; }
+    .search-wrap input {
+      width: 100%;
+      padding: 11px 40px 11px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.86rem;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-wrap input:focus { border-color: var(--border-hover); }
+    .search-wrap i { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; }
+
+    /* ── CONTROL BUTTONS ── */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .ctrl-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--border-hover); color: var(--white); }
+    .ctrl-btn i { font-size: 0.85rem; }
+
+    .ctrl-btn.track-btn { grid-column: span 2; }
+    .ctrl-btn.track-btn.active { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: var(--green); }
+
+    /* ── SHARE OPTIONS ── */
+    .share-section {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .share-section.show { display: flex; animation: fadeUp 0.3s ease both; }
+
+    .share-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-bottom: 2px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .share-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      width: 100%;
+      text-align: left;
+    }
+    .share-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--border-hover); color: var(--white); }
+    .share-btn i { width: 18px; text-align: center; font-size: 1rem; }
+    .share-btn.whatsapp i { color: #25d366; }
+    .share-btn.email i { color: #60a5fa; }
+    .share-btn.call i { color: var(--red); }
+
+    /* ── INFO CARDS ── */
+    .info-card {
+      background: var(--navy-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+    }
+
+    .info-card-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .info-card-value {
+      font-size: 0.86rem;
+      color: var(--white);
+      line-height: 1.5;
+    }
+
+    .weather-icon { color: var(--amber); margin-right: 5px; }
+
+    /* hint text */
+    .hint-text {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 300;
+      padding: 0.8rem 1rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--red);
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* ── MAP ── */
     #map {
       flex: 1;
       height: 100%;
-      border-left: 2px solid #fff;
+      z-index: 1;
     }
-    .search-bar {
-      width: 100%;
-      max-width: 250px;
-      padding: 10px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      outline: none;
+
+    /* Override leaflet routing panel to match dark theme */
+    .leaflet-routing-container {
+      background: var(--navy-mid) !important;
+      color: var(--white) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 10px !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4) !important;
     }
-    .controls {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-      max-width: 250px;
-    }
-    .controls button {
-      padding: 10px;
-      font-size: 0.9rem;
-      background: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .controls button:hover {
-      background: #45a049;
-    }
-    .status {
-      font-size: 1rem;
-      color: #ffeb3b;
-      display: none;
-      animation: pulse 1.5s infinite;
-      text-align: center;
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-    .contact-options {
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-      max-width: 250px;
-    }
-    .contact-options button {
-      padding: 10px;
-      font-size: 0.9rem;
-      background: #2196f3;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .contact-options button:hover {
-      background: #1976d2;
-    }
-    .weather {
-      font-size: 0.9rem;
-      color: #fff;
-      text-align: center;
-    }
-    .directions {
-      font-size: 0.9rem;
-      color: #fff;
-      display: none;
-      text-align: center;
-    }
-    .p {
-      color: white;
-      font-size: 0.9rem;
-      text-align: center;
-    }
-    .leaflet-popup-content button {
-      padding: 8px 16px;
-      font-size: 0.9rem;
-      background: linear-gradient(45deg, #4caf50, #2e7d32);
-      color: white;
-      border: none;
-      border-radius: 15px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, background 0.3s;
-      margin-top: 5px;
-      display: inline-block;
-    }
-    .leaflet-popup-content button:hover {
-      background: linear-gradient(45deg, #2e7d32, #4caf50);
-      transform: scale(1.05);
-    }
-    .leaflet-popup-content button:active {
-      transform: scale(0.95);
-    }
-    @media (max-width: 800px) {
-      .container {
+    .leaflet-routing-alt { background: transparent !important; }
+    .leaflet-routing-alt h2, .leaflet-routing-alt h3 { color: var(--white) !important; }
+
+    /* ── MOBILE NAV ── */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: fixed;
+        inset: 0;
+        top: 64px;
+        background: rgba(10,15,30,0.97);
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        z-index: 200;
       }
-      .left-panel {
-        width: 100%;
-        height: auto;
-        overflow-y: visible;
-        padding: 15px;
-      }
-      #map {
-        height: 50vh;
-        width: 100%;
-        border-left: none;
-        border-top: 2px solid #fff;
-      }
-      h1 { font-size: 1.8rem; }
-      #sosButton { font-size: 1rem; }
-      .search-bar { width: 90%; }
+      .nav-links.open { display: flex; }
+      .nav-links a { font-size: 1.1rem; }
+      .hamburger { display: flex; }
     }
+
+    @media (max-width: 820px) {
+      .app-layout { flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+      .left-panel { width: 100%; max-height: none; overflow-y: visible; border-right: none; border-bottom: 1px solid var(--border); }
+      #map { height: 55vh; flex: none; }
+      .controls-grid { grid-template-columns: repeat(4, 1fr); }
+      .ctrl-btn.track-btn { grid-column: span 4; }
+      body, html { overflow: auto; }
+    }
+
+    @media (max-width: 520px) {
+      .controls-grid { grid-template-columns: 1fr 1fr; }
+      .ctrl-btn.track-btn { grid-column: span 2; }
+      .navbar { padding: 0 1.2rem; }
+    }
+  
+    /* ── SMOOTH LAYER ── */
+    body { animation: pageIn 0.45s ease both; }
+    @keyframes pageIn { from { opacity:0; } to { opacity:1; } }
+    ::selection { background: rgba(232,50,26,0.3); color: #F4F1EC; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(232,50,26,0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(232,50,26,0.55); }
+    .navbar { transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease !important; }
+    .navbar.scrolled { height: 52px !important; background: rgba(10,15,30,0.98) !important; box-shadow: 0 4px 28px rgba(0,0,0,0.45) !important; }
+    .nav-links a { transition: color 0.22s ease !important; }
+    .nav-links a::after { transition: width 0.28s cubic-bezier(0.22,1,0.36,1) !important; }
+    .logo { transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); }
+    .logo:hover { transform: scale(1.06); }
+    .ctrl-btn { transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.22s cubic-bezier(0.22,1,0.36,1) !important; }
+    .ctrl-btn:hover { transform: translateY(-2px) !important; }
+    .ctrl-btn:active { transform: scale(0.96) !important; }
+    .share-btn { transition: background 0.22s, border-color 0.22s, color 0.22s, transform 0.22s cubic-bezier(0.22,1,0.36,1) !important; }
+    .share-btn:hover { transform: translateX(4px) !important; }
+    .info-card { transition: border-color 0.25s, box-shadow 0.25s; }
+    .info-card:hover { border-color: rgba(244,241,236,0.22) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+    .panel-header { animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s both; }
+    .sos-btn-wrap { animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) 0.2s both; }
+    .search-wrap { animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) 0.28s both; }
+    .controls-grid { animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) 0.34s both; }
+    .hint-text { animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) 0.42s both; }
+    @keyframes slideDown { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+    .share-section.show { animation: shareIn 0.4s cubic-bezier(0.22,1,0.36,1) both !important; }
+    @keyframes shareIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
+    .status-bar.show { animation: statusIn 0.35s cubic-bezier(0.22,1,0.36,1) both !important; }
+    @keyframes statusIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:none; } }
+    .search-wrap input:focus { border-color: rgba(232,50,26,0.5) !important; box-shadow: 0 0 0 3px rgba(232,50,26,0.1) !important; }
+    .nav-signin { transition: background 0.2s, transform 0.22s cubic-bezier(0.22,1,0.36,1) !important; }
+    .nav-signin:hover { transform: translateY(-2px) !important; }
+
   </style>
 </head>
 <body>
+
+  <!-- NAVBAR -->
   <nav class="navbar">
-    <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
-    <ul class="nav-links">
+    <a href="index.html" class="nav-brand">
+      <img src="./images/RESQ.jpg" alt="RESQ Logo" class="logo">
+      <span class="brand-text">RES<span>Q</span></span>
+    </a>
+    <ul class="nav-links" id="navLinks">
       <li><a href="index.html">Home</a></li>
-      <li><a href="sos.html">SOS</a></li>
+      <li><a href="sos.html" class="active">SOS</a></li>
       <li><a href="Qchat.html">Qchat</a></li>
       <li><a href="service.html">Services</a></li>
-      <li><a href="ppj.html">Sign In</a></li>
+      <li><a href="ppj.html" class="nav-signin">Sign In</a></li>
     </ul>
-  </nav>
-  <div class="container">
-    <div class="left-panel">
-      <h1>Emergency SOS Hub</h1>
-      <button id="sosButton">Send SOS <i class="fas fa-exclamation-triangle"></i></button>
-      <input type="text" id="searchBar" class="search-bar" placeholder="Search location..." />
-      <div id="status" class="status">Sending SOS...</div>
-      <div class="controls">
-        <button onclick="locateUser()"><i class="fas fa-location-arrow"></i> My Location</button>
-        <button onclick="startLiveTracking()"><i class="fas fa-crosshairs"></i> Start Tracking</button>
-        <button onclick="zoomIn()"><i class="fas fa-plus"></i> Zoom In</button>
-        <button onclick="zoomOut()"><i class="fas fa-minus"></i> Zoom Out</button>
-      </div>
-      <div class="contact-options" id="contactOptions">
-        <button onclick="shareViaWhatsApp()">Share via WhatsApp <i class="fab fa-whatsapp"></i></button>
-        <button onclick="shareViaEmail()">Share via Email <i class="fas fa-envelope"></i></button>
-        <button onclick="callEmergency()">Call Emergency <i class="fas fa-phone"></i></button>
-      </div>
-      <div class="weather" id="weather">Weather: Loading...</div>
-      <div class="directions" id="directions">Directions: Follow the route on the map to your destination.</div>
-      <p class="p">After sending an SOS you can also wait on your location for help, the RESQ volunteer team will be there for your help ASAP!!!</p>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
     </div>
+  </nav>
+
+  <!-- APP LAYOUT -->
+  <div class="app-layout">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <p class="panel-eyebrow">Emergency Hub</p>
+        <h1 class="panel-title">SOS Response</h1>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- SOS BUTTON -->
+        <div class="sos-btn-wrap">
+          <button class="sos-btn" id="sosButton" onclick="triggerSOS()">
+            <i class="fas fa-exclamation-triangle"></i>
+            SOS
+          </button>
+        </div>
+
+        <!-- STATUS -->
+        <div class="status-bar" id="statusBar">
+          <span class="status-dot"></span>
+          <span id="statusText">Sending SOS...</span>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-wrap">
+          <input type="text" id="searchBar" placeholder="Search location…" />
+          <i class="fas fa-search"></i>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="controls-grid">
+          <button class="ctrl-btn" onclick="locateUser()">
+            <i class="fas fa-location-arrow"></i> My Location
+          </button>
+          <button class="ctrl-btn" onclick="zoomIn()">
+            <i class="fas fa-plus"></i> Zoom In
+          </button>
+          <button class="ctrl-btn" onclick="zoomOut()">
+            <i class="fas fa-minus"></i> Zoom Out
+          </button>
+          <button class="ctrl-btn" onclick="resetMap()">
+            <i class="fas fa-globe-asia"></i> Overview
+          </button>
+          <button class="ctrl-btn track-btn" id="trackBtn" onclick="toggleTracking()">
+            <i class="fas fa-crosshairs"></i> Start Live Tracking
+          </button>
+        </div>
+
+        <!-- SHARE SECTION (shown after SOS) -->
+        <div class="share-section" id="shareSection">
+          <div class="share-label">Share your location</div>
+          <button class="share-btn whatsapp" onclick="shareViaWhatsApp()">
+            <i class="fab fa-whatsapp"></i> Share via WhatsApp
+          </button>
+          <button class="share-btn email" onclick="shareViaEmail()">
+            <i class="fas fa-envelope"></i> Share via Email
+          </button>
+          <button class="share-btn call" onclick="callEmergency()">
+            <i class="fas fa-phone"></i> Call Emergency (112)
+          </button>
+        </div>
+
+        <!-- WEATHER -->
+        <div class="info-card" id="weatherCard">
+          <div class="info-card-label"><i class="fas fa-cloud-sun weather-icon"></i>Weather</div>
+          <div class="info-card-value" id="weatherText">Loading weather…</div>
+        </div>
+
+        <!-- DIRECTIONS -->
+        <div class="info-card" id="directionsCard" style="display:none;">
+          <div class="info-card-label"><i class="fas fa-route" style="color:var(--amber);margin-right:5px;"></i>Directions</div>
+          <div class="info-card-value" id="directionsText">Follow the route on the map.</div>
+        </div>
+
+        <!-- HINT -->
+        <p class="hint-text">
+          After sending an SOS, stay at your location. The RESQ volunteer team will reach you as soon as possible. Share your location via WhatsApp or Email for faster response.
+        </p>
+
+      </div>
+    </div>
+
+    <!-- MAP -->
     <div id="map"></div>
   </div>
 
+  <audio id="siren" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
+
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
-  <audio id="siren" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
   <script>
-    let map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
-    let userLocation = null;
-    let marker = null;
-    let routingControl = null;
-    let siren = document.getElementById('siren');
-    let trackingInterval = null;
+    // ── MAP INIT ──
+    let map = L.map('map', { zoomControl: false }).setView([20.5937, 78.9629], 5);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: '© OpenStreetMap contributors'
+      attribution: '© OpenStreetMap © CARTO'
     }).addTo(map);
 
-    const sosIcon = L.icon({
-      iconUrl: 'https://cdn-icons-png.flaticon.com/512/484/484167.png',
-      iconSize: [40, 40],
-      iconAnchor: [20, 40],
-      popupAnchor: [0, -40]
+    let userLocation = null;
+    let userMarker = null;
+    let routingControl = null;
+    let trackingInterval = null;
+    let isTracking = false;
+    const siren = document.getElementById('siren');
+
+    // ── ICONS ──
+    const sosIcon = L.divIcon({
+      className: '',
+      html: `<div style="width:36px;height:36px;background:var(--red,#E8321A);border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 0 0 4px rgba(232,50,26,0.35),0 4px 12px rgba(0,0,0,0.4);"><span style="color:#fff;font-size:14px;">!</span></div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -22]
     });
 
-    const quellZoneIcon = L.icon({
-      iconUrl: 'https://cdn-icons-png.flaticon.com/512/1673/1673026.png',
-      iconSize: [40, 40],
-      iconAnchor: [20, 40],
-      popupAnchor: [0, -40]
+    const quellIcon = L.divIcon({
+      className: '',
+      html: `<div style="width:30px;height:30px;background:#22c55e;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 0 0 3px rgba(34,197,94,0.3),0 4px 10px rgba(0,0,0,0.3);"><span style="color:#fff;font-size:11px;">✚</span></div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+      popupAnchor: [0, -18]
     });
 
-    // Indian capital cities with coordinates and random quell zones (2-5)
-    const capitalCities = [
-      { name: "Agartala", state: "Tripura", lat: 23.8315, lng: 91.2868, zones: getRandomZones(2, 5, [
-          { name: "Agartala Hospital", lat: 23.835, lng: 91.285 },
-          { name: "Community Shelter", lat: 23.829, lng: 91.290 },
-          { name: "Ujjayanta Palace", lat: 23.833, lng: 91.282 },
-          { name: "Tripura Medical College", lat: 23.837, lng: 91.288 }
-        ]) },
-      { name: "Aizawl", state: "Mizoram", lat: 23.7271, lng: 92.7176, zones: getRandomZones(2, 5, [
-          { name: "Civil Hospital", lat: 23.729, lng: 92.715 },
-          { name: "Shelter Zone", lat: 23.725, lng: 92.720 },
-          { name: "Zoram Medical College", lat: 23.731, lng: 92.713 },
-          { name: "Dawrpui Shelter", lat: 23.723, lng: 92.718 }
-        ]) },
-      { name: "Amaravati", state: "Andhra Pradesh", lat: 16.541, lng: 80.515, zones: getRandomZones(2, 5, [
-          { name: "AIIMS Mangalagiri", lat: 16.543, lng: 80.517 },
-          { name: "Community Center", lat: 16.539, lng: 80.513 },
-          { name: "Vijayawada Hospital", lat: 16.5062, lng: 80.6480 },
-          { name: "Guntur Medical College", lat: 16.306, lng: 80.436 }
-        ]) },
-      { name: "Bengaluru", state: "Karnataka", lat: 12.9716, lng: 77.5946, zones: getRandomZones(2, 5, [
-          { name: "Victoria Hospital", lat: 12.963, lng: 77.587 },
-          { name: "NIMHANS", lat: 12.943, lng: 77.598 },
-          { name: "Jayanagar Shelter", lat: 12.930, lng: 77.583 },
-          { name: "Koramangala Center", lat: 12.935, lng: 77.624 },
-          { name: "St. John's Hospital", lat: 12.933, lng: 77.630 }
-        ]) },
-      { name: "Bhopal", state: "Madhya Pradesh", lat: 23.2599, lng: 77.4126, zones: getRandomZones(2, 5, [
-          { name: "AIIMS Bhopal", lat: 23.260, lng: 77.413 },
-          { name: "Hamidia Hospital", lat: 23.253, lng: 77.408 },
-          { name: "Lake View Shelter", lat: 23.265, lng: 77.418 },
-          { name: "Chirayu Hospital", lat: 23.250, lng: 77.420 }
-        ]) },
-      { name: "Bhubaneswar", state: "Odisha", lat: 20.2961, lng: 85.8245, zones: getRandomZones(2, 5, [
-          { name: "Capital Hospital", lat: 20.294, lng: 85.823 },
-          { name: "AIIMS Bhubaneswar", lat: 20.290, lng: 85.827 },
-          { name: "Kalinga Stadium Shelter", lat: 20.298, lng: 85.820 },
-          { name: "SUM Hospital", lat: 20.285, lng: 85.830 }
-        ]) },
-      { name: "Chandigarh", state: "Chandigarh (UT)", lat: 30.7333, lng: 76.7794, zones: getRandomZones(2, 5, [
-          { name: "PGIMER", lat: 30.735, lng: 76.775 },
-          { name: "Sector 17 Shelter", lat: 30.732, lng: 76.782 },
-          { name: "GMCH Sector 32", lat: 30.729, lng: 76.786 },
-          { name: "Civil Hospital Sector 6", lat: 30.740, lng: 76.770 }
-        ]) },
-      { name: "Chennai", state: "Tamil Nadu", lat: 13.0827, lng: 80.2707, zones: getRandomZones(2, 5, [
-          { name: "Rajiv Gandhi Hospital", lat: 13.080, lng: 80.272 },
-          { name: "Apollo Hospital", lat: 13.085, lng: 80.268 },
-          { name: "Marina Shelter", lat: 13.078, lng: 80.275 },
-          { name: "Adyar Center", lat: 13.006, lng: 80.257 },
-          { name: "Stanley Medical College", lat: 13.104, lng: 80.286 }
-        ]) },
-      { name: "Daman", state: "Daman & Diu (UT)", lat: 20.3974, lng: 72.8328, zones: getRandomZones(2, 5, [
-          { name: "Government Hospital", lat: 20.398, lng: 72.831 },
-          { name: "Community Hall", lat: 20.396, lng: 72.834 },
-          { name: "Moti Daman Shelter", lat: 20.395, lng: 72.830 }
-        ]) },
-      { name: "Dehradun", state: "Uttarakhand", lat: 30.3165, lng: 78.0322, zones: getRandomZones(2, 5, [
-          { name: "Doon Hospital", lat: 30.318, lng: 78.030 },
-          { name: "Coronation Hospital", lat: 30.315, lng: 78.035 },
-          { name: "Rajpur Road Shelter", lat: 30.320, lng: 78.028 },
-          { name: "Max Hospital", lat: 30.313, lng: 78.040 }
-        ]) },
-      { name: "Dispur", state: "Assam", lat: 26.1445, lng: 91.7898, zones: getRandomZones(2, 5, [
-          { name: "GMCH Guwahati", lat: 26.146, lng: 91.787 },
-          { name: "Dispur Hospital", lat: 26.143, lng: 91.792 },
-          { name: "Khanapara Shelter", lat: 26.140, lng: 91.795 },
-          { name: "Apollo Hospital Guwahati", lat: 26.141, lng: 91.790 }
-        ]) },
-      { name: "Gandhinagar", state: "Gujarat", lat: 23.2156, lng: 72.6369, zones: getRandomZones(2, 5, [
-          { name: "Civil Hospital", lat: 23.217, lng: 72.635 },
-          { name: "Apollo Hospital", lat: 23.213, lng: 72.639 },
-          { name: "Sector 21 Shelter", lat: 23.220, lng: 72.633 },
-          { name: "Gandhinagar Medical College", lat: 23.210, lng: 72.641 }
-        ]) },
-      { name: "Gangtok", state: "Sikkim", lat: 27.3389, lng: 88.6065, zones: getRandomZones(2, 5, [
-          { name: "STNM Hospital", lat: 27.340, lng: 88.605 },
-          { name: "Tadong Shelter", lat: 27.337, lng: 88.610 },
-          { name: "Sichey Community Center", lat: 27.335, lng: 88.607 }
-        ]) },
-      { name: "Hyderabad", state: "Telangana", lat: 17.3850, lng: 78.4867, zones: getRandomZones(2, 5, [
-          { name: "Osmania Hospital", lat: 17.387, lng: 78.485 },
-          { name: "Gandhi Hospital", lat: 17.390, lng: 78.482 },
-          { name: "Banjara Hills Shelter", lat: 17.383, lng: 78.490 },
-          { name: "Hi-Tech City Center", lat: 17.441, lng: 78.380 },
-          { name: "Care Hospital", lat: 17.412, lng: 78.475 }
-        ]) },
-      { name: "Imphal", state: "Manipur", lat: 24.8170, lng: 93.9368, zones: getRandomZones(2, 5, [
-          { name: "RIMS Hospital", lat: 24.819, lng: 93.935 },
-          { name: "JNIMS Hospital", lat: 24.815, lng: 93.940 },
-          { name: "Lamphelpat Shelter", lat: 24.820, lng: 93.932 },
-          { name: "City Hospital", lat: 24.813, lng: 93.938 }
-        ]) },
-      { name: "Itanagar", state: "Arunachal Pradesh", lat: 27.0844, lng: 93.6053, zones: getRandomZones(2, 5, [
-          { name: "TRIHMS", lat: 27.085, lng: 93.604 },
-          { name: "Naharlagun Shelter", lat: 27.083, lng: 93.607 },
-          { name: "Itanagar Community Center", lat: 27.087, lng: 93.602 }
-        ]) },
-      { name: "Jaipur", state: "Rajasthan", lat: 26.9124, lng: 75.7873, zones: getRandomZones(2, 5, [
-          { name: "Sawai Man Singh Hospital", lat: 26.914, lng: 75.785 },
-          { name: "Jaipur Hospital", lat: 26.910, lng: 75.790 },
-          { name: "Mansarovar Shelter", lat: 26.905, lng: 75.780 },
-          { name: "Vidhyadhar Nagar Center", lat: 26.920, lng: 75.795 },
-          { name: "Fortis Hospital", lat: 26.908, lng: 75.782 }
-        ]) },
-      { name: "Jammu", state: "Jammu & Kashmir (UT)", lat: 32.7266, lng: 74.8570, zones: getRandomZones(2, 5, [
-          { name: "GMCH Jammu", lat: 32.728, lng: 74.855 },
-          { name: "SMGS Hospital", lat: 32.725, lng: 74.860 },
-          { name: "Gandhi Nagar Shelter", lat: 32.730, lng: 74.852 },
-          { name: "Shri Mata Vaishno Devi Hospital", lat: 32.723, lng: 74.862 }
-        ]) },
-      { name: "Kargil", state: "Ladakh (UT)", lat: 34.5539, lng: 76.1349, zones: getRandomZones(2, 5, [
-          { name: "District Hospital", lat: 34.555, lng: 76.133 },
-          { name: "Community Shelter", lat: 34.552, lng: 76.137 },
-          { name: "Kargil Health Center", lat: 34.557, lng: 76.130 }
-        ]) },
-      { name: "Kohima", state: "Nagaland", lat: 25.6586, lng: 94.1053, zones: getRandomZones(2, 5, [
-          { name: "NHAK Hospital", lat: 25.660, lng: 94.104 },
-          { name: "Kohima Shelter", lat: 25.657, lng: 94.107 },
-          { name: "Botsa Community Center", lat: 25.655, lng: 94.110 }
-        ]) },
-      { name: "Kolkata", state: "West Bengal", lat: 22.5726, lng: 88.3639, zones: getRandomZones(2, 5, [
-          { name: "SSKM Hospital", lat: 22.570, lng: 88.360 },
-          { name: "Medical College", lat: 22.575, lng: 88.365 },
-          { name: "Salt Lake Shelter", lat: 22.580, lng: 88.370 },
-          { name: "Howrah Center", lat: 22.595, lng: 88.263 },
-          { name: "Apollo Gleneagles", lat: 22.577, lng: 88.412 }
-        ]) },
-      { name: "Lucknow", state: "Uttar Pradesh", lat: 26.8467, lng: 80.9462, zones: getRandomZones(2, 5, [
-          { name: "Civil Hospital", lat: 26.8492, lng: 80.9431 },
-          { name: "Lohia Hospital", lat: 26.8650, lng: 80.9562 },
-          { name: "Community Shelter", lat: 26.8780, lng: 80.9970 },
-          { name: "Gomti Nagar Center", lat: 26.855, lng: 80.975 },
-          { name: "KGMC", lat: 26.870, lng: 80.940 }
-        ]) },
-      { name: "Mumbai", state: "Maharashtra", lat: 19.0760, lng: 72.8777, zones: getRandomZones(2, 5, [
-          { name: "KEM Hospital", lat: 19.078, lng: 72.875 },
-          { name: "JJ Hospital", lat: 19.080, lng: 72.880 },
-          { name: "Bandra Shelter", lat: 19.070, lng: 72.870 },
-          { name: "Worli Center", lat: 19.060, lng: 72.865 },
-          { name: "Sion Hospital", lat: 19.045, lng: 72.890 }
-        ]) },
-      { name: "New Delhi", state: "Delhi (UT)", lat: 28.6139, lng: 77.2090, zones: getRandomZones(2, 5, [
-          { name: "AIIMS Delhi", lat: 28.615, lng: 77.207 },
-          { name: "Safdarjung Hospital", lat: 28.610, lng: 77.212 },
-          { name: "Connaught Place Shelter", lat: 28.620, lng: 77.215 },
-          { name: "Rohini Center", lat: 28.705, lng: 77.126 },
-          { name: "LNJP Hospital", lat: 28.618, lng: 77.230 }
-        ]) },
-      { name: "Panaji", state: "Goa", lat: 15.4909, lng: 73.8278, zones: getRandomZones(2, 5, [
-          { name: "Goa Medical College", lat: 15.492, lng: 73.825 },
-          { name: "Miramar Shelter", lat: 15.489, lng: 73.830 },
-          { name: "Dona Paula Center", lat: 15.487, lng: 73.828 }
-        ]) },
-      { name: "Patna", state: "Bihar", lat: 25.5941, lng: 85.1376, zones: getRandomZones(2, 5, [
-          { name: "PMCH Patna", lat: 25.596, lng: 85.135 },
-          { name: "IGIMS", lat: 25.590, lng: 85.140 },
-          { name: "Gandhi Maidan Shelter", lat: 25.598, lng: 85.132 },
-          { name: "Patna Medical College", lat: 25.595, lng: 85.138 }
-        ]) },
-      { name: "Port Blair", state: "Andaman & Nicobar (UT)", lat: 11.6234, lng: 92.7265, zones: getRandomZones(2, 5, [
-          { name: "GB Pant Hospital", lat: 11.625, lng: 92.725 },
-          { name: "Aberdeen Shelter", lat: 11.621, lng: 92.728 },
-          { name: "Junglighat Center", lat: 11.620, lng: 92.727 }
-        ]) },
-      { name: "Puducherry", state: "Puducherry (UT)", lat: 11.9139, lng: 79.8145, zones: getRandomZones(2, 5, [
-          { name: "JIPMER", lat: 11.915, lng: 79.813 },
-          { name: "Beach Road Shelter", lat: 11.912, lng: 79.816 },
-          { name: "Lawspet Community Center", lat: 11.917, lng: 79.811 }
-        ]) },
-      { name: "Raipur", state: "Chhattisgarh", lat: 21.2514, lng: 81.6296, zones: getRandomZones(2, 5, [
-          { name: "AIIMS Raipur", lat: 21.253, lng: 81.627 },
-          { name: "Mekahara Hospital", lat: 21.250, lng: 81.632 },
-          { name: "Telibandha Shelter", lat: 21.255, lng: 81.625 },
-          { name: "Ramkrishna Hospital", lat: 21.248, lng: 81.630 }
-        ]) },
-      { name: "Ranchi", state: "Jharkhand", lat: 23.3441, lng: 85.3096, zones: getRandomZones(2, 5, [
-          { name: "RIMS Ranchi", lat: 23.346, lng: 85.307 },
-          { name: "Sadar Hospital", lat: 23.342, lng: 85.312 },
-          { name: "Kanke Shelter", lat: 23.350, lng: 85.305 },
-          { name: "Medica Hospital", lat: 23.340, lng: 85.315 }
-        ]) },
-      { name: "Shillong", state: "Meghalaya", lat: 25.5788, lng: 91.8933, zones: getRandomZones(2, 5, [
-          { name: "NEIGRIHMS", lat: 25.580, lng: 91.891 },
-          { name: "Civil Hospital", lat: 25.577, lng: 91.895 },
-          { name: "Laitumkhrah Shelter", lat: 25.575, lng: 91.890 },
-          { name: "Ganesh Das Hospital", lat: 25.579, lng: 91.897 }
-        ]) },
-      { name: "Shimla", state: "Himachal Pradesh", lat: 31.1048, lng: 77.1734, zones: getRandomZones(2, 5, [
-          { name: "IGMC Shimla", lat: 31.106, lng: 77.172 },
-          { name: "KNH Hospital", lat: 31.103, lng: 77.175 },
-          { name: "Mall Road Shelter", lat: 31.108, lng: 77.170 },
-          { name: "Deen Dayal Hospital", lat: 31.101, lng: 77.178 }
-        ]) },
-      { name: "Silvassa", state: "Dadra & Nagar Haveli (UT)", lat: 20.2763, lng: 73.0083, zones: getRandomZones(2, 5, [
-          { name: "Vinoba Bhave Hospital", lat: 20.278, lng: 73.007 },
-          { name: "Community Center", lat: 20.275, lng: 73.010 },
-          { name: "Silvassa Shelter", lat: 20.274, lng: 73.012 }
-        ]) },
-      { name: "Srinagar", state: "Jammu & Kashmir (UT)", lat: 34.0837, lng: 74.7973, zones: getRandomZones(2, 5, [
-          { name: "SMHS Hospital", lat: 34.085, lng: 74.795 },
-          { name: "SKIMS", lat: 34.080, lng: 74.800 },
-          { name: "Dal Lake Shelter", lat: 34.088, lng: 74.792 },
-          { name: "Lal Ded Hospital", lat: 34.082, lng: 74.798 }
-        ]) },
-      { name: "Thiruvananthapuram", state: "Kerala", lat: 8.5241, lng: 76.9366, zones: getRandomZones(2, 5, [
-          { name: "Medical College", lat: 8.526, lng: 76.935 },
-          { name: "General Hospital", lat: 8.522, lng: 76.938 },
-          { name: "Veli Shelter", lat: 8.520, lng: 76.940 },
-          { name: "Pattom Center", lat: 8.530, lng: 76.932 },
-          { name: "SCTIMST", lat: 8.528, lng: 76.930 }
-        ]) }
-    ];
-
-    // Function to get random number of zones (2-5) from provided list
+    // ── QUELL ZONES DATA ──
     function getRandomZones(min, max, zones) {
       const count = Math.floor(Math.random() * (max - min + 1)) + min;
       return zones.sort(() => 0.5 - Math.random()).slice(0, count);
     }
 
-    // Add Quell Zones to Map
+    const capitalCities = [
+      { name: "New Delhi", state: "Delhi", lat: 28.6139, lng: 77.2090, zones: getRandomZones(2, 4, [
+          { name: "AIIMS Delhi", lat: 28.615, lng: 77.207 },
+          { name: "Safdarjung Hospital", lat: 28.610, lng: 77.212 },
+          { name: "Connaught Place Shelter", lat: 28.620, lng: 77.215 },
+          { name: "LNJP Hospital", lat: 28.618, lng: 77.230 }
+        ]) },
+      { name: "Mumbai", state: "Maharashtra", lat: 19.0760, lng: 72.8777, zones: getRandomZones(2, 4, [
+          { name: "KEM Hospital", lat: 19.078, lng: 72.875 },
+          { name: "JJ Hospital", lat: 19.080, lng: 72.880 },
+          { name: "Bandra Shelter", lat: 19.070, lng: 72.870 },
+          { name: "Sion Hospital", lat: 19.045, lng: 72.890 }
+        ]) },
+      { name: "Bengaluru", state: "Karnataka", lat: 12.9716, lng: 77.5946, zones: getRandomZones(2, 4, [
+          { name: "Victoria Hospital", lat: 12.963, lng: 77.587 },
+          { name: "NIMHANS", lat: 12.943, lng: 77.598 },
+          { name: "St. John's Hospital", lat: 12.933, lng: 77.630 },
+          { name: "Jayanagar Shelter", lat: 12.930, lng: 77.583 }
+        ]) },
+      { name: "Chennai", state: "Tamil Nadu", lat: 13.0827, lng: 80.2707, zones: getRandomZones(2, 4, [
+          { name: "Rajiv Gandhi Hospital", lat: 13.080, lng: 80.272 },
+          { name: "Apollo Hospital", lat: 13.085, lng: 80.268 },
+          { name: "Stanley Medical College", lat: 13.104, lng: 80.286 },
+          { name: "Marina Shelter", lat: 13.078, lng: 80.275 }
+        ]) },
+      { name: "Hyderabad", state: "Telangana", lat: 17.3850, lng: 78.4867, zones: getRandomZones(2, 4, [
+          { name: "Osmania Hospital", lat: 17.387, lng: 78.485 },
+          { name: "Gandhi Hospital", lat: 17.390, lng: 78.482 },
+          { name: "Care Hospital", lat: 17.412, lng: 78.475 },
+          { name: "Banjara Hills Shelter", lat: 17.383, lng: 78.490 }
+        ]) },
+      { name: "Kolkata", state: "West Bengal", lat: 22.5726, lng: 88.3639, zones: getRandomZones(2, 4, [
+          { name: "SSKM Hospital", lat: 22.570, lng: 88.360 },
+          { name: "Medical College", lat: 22.575, lng: 88.365 },
+          { name: "Apollo Gleneagles", lat: 22.577, lng: 88.412 },
+          { name: "Howrah Center", lat: 22.595, lng: 88.263 }
+        ]) },
+      { name: "Jaipur", state: "Rajasthan", lat: 26.9124, lng: 75.7873, zones: getRandomZones(2, 4, [
+          { name: "SMS Hospital", lat: 26.914, lng: 75.785 },
+          { name: "Fortis Hospital", lat: 26.908, lng: 75.782 },
+          { name: "Mansarovar Shelter", lat: 26.905, lng: 75.780 },
+          { name: "Vidhyadhar Nagar Center", lat: 26.920, lng: 75.795 }
+        ]) },
+      { name: "Lucknow", state: "Uttar Pradesh", lat: 26.8467, lng: 80.9462, zones: getRandomZones(2, 4, [
+          { name: "Civil Hospital", lat: 26.849, lng: 80.943 },
+          { name: "Lohia Hospital", lat: 26.865, lng: 80.956 },
+          { name: "KGMC", lat: 26.870, lng: 80.940 },
+          { name: "Gomti Nagar Center", lat: 26.855, lng: 80.975 }
+        ]) },
+      { name: "Bhopal", state: "Madhya Pradesh", lat: 23.2599, lng: 77.4126, zones: getRandomZones(2, 3, [
+          { name: "AIIMS Bhopal", lat: 23.260, lng: 77.413 },
+          { name: "Hamidia Hospital", lat: 23.253, lng: 77.408 },
+          { name: "Lake View Shelter", lat: 23.265, lng: 77.418 }
+        ]) },
+      { name: "Patna", state: "Bihar", lat: 25.5941, lng: 85.1376, zones: getRandomZones(2, 3, [
+          { name: "PMCH Patna", lat: 25.596, lng: 85.135 },
+          { name: "IGIMS", lat: 25.590, lng: 85.140 },
+          { name: "Gandhi Maidan Shelter", lat: 25.598, lng: 85.132 }
+        ]) },
+      { name: "Chandigarh", state: "Chandigarh", lat: 30.7333, lng: 76.7794, zones: getRandomZones(2, 3, [
+          { name: "PGIMER", lat: 30.735, lng: 76.775 },
+          { name: "Sector 17 Shelter", lat: 30.732, lng: 76.782 },
+          { name: "GMCH Sector 32", lat: 30.729, lng: 76.786 }
+        ]) },
+      { name: "Raipur", state: "Chhattisgarh", lat: 21.2514, lng: 81.6296, zones: getRandomZones(2, 3, [
+          { name: "AIIMS Raipur", lat: 21.253, lng: 81.627 },
+          { name: "Mekahara Hospital", lat: 21.250, lng: 81.632 },
+          { name: "Telibandha Shelter", lat: 21.255, lng: 81.625 }
+        ]) },
+      { name: "Thiruvananthapuram", state: "Kerala", lat: 8.5241, lng: 76.9366, zones: getRandomZones(2, 3, [
+          { name: "Medical College", lat: 8.526, lng: 76.935 },
+          { name: "General Hospital", lat: 8.522, lng: 76.938 },
+          { name: "SCTIMST", lat: 8.528, lng: 76.930 }
+        ]) },
+      { name: "Bhubaneswar", state: "Odisha", lat: 20.2961, lng: 85.8245, zones: getRandomZones(2, 3, [
+          { name: "Capital Hospital", lat: 20.294, lng: 85.823 },
+          { name: "AIIMS Bhubaneswar", lat: 20.290, lng: 85.827 },
+          { name: "SUM Hospital", lat: 20.285, lng: 85.830 }
+        ]) },
+      { name: "Ranchi", state: "Jharkhand", lat: 23.3441, lng: 85.3096, zones: getRandomZones(2, 3, [
+          { name: "RIMS Ranchi", lat: 23.346, lng: 85.307 },
+          { name: "Sadar Hospital", lat: 23.342, lng: 85.312 },
+          { name: "Kanke Shelter", lat: 23.350, lng: 85.305 }
+        ]) }
+    ];
+
+    // Add Quell Zone markers
     capitalCities.forEach(city => {
       city.zones.forEach(zone => {
-        L.marker([zone.lat, zone.lng], { icon: quellZoneIcon })
+        L.marker([zone.lat, zone.lng], { icon: quellIcon })
           .addTo(map)
-          .bindPopup(`<b>${zone.name}</b><br>Safe Quell Zone in ${city.name}<br><button onclick="navigateToQuellZone(${zone.lat}, ${zone.lng})">Get Directions</button>`)
+          .bindPopup(`
+            <div style="font-family:'DM Sans',sans-serif;min-width:180px;">
+              <div style="font-weight:700;font-size:14px;margin-bottom:4px;">${zone.name}</div>
+              <div style="font-size:12px;color:#888;margin-bottom:10px;">Safe Quell Zone · ${city.name}, ${city.state}</div>
+              <button onclick="navigateToQuellZone(${zone.lat}, ${zone.lng})" style="width:100%;padding:7px;background:#E8321A;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:0.04em;">Get Directions →</button>
+            </div>
+          `)
           .on('click', () => {
-            document.getElementById('directions').style.display = 'block';
-            document.getElementById('directions').textContent = `Directions: Follow the yellow route to ${zone.name} in ${city.name}.`;
+            showDirections(`Follow the route to ${zone.name} in ${city.name}.`);
           });
       });
     });
 
-    // Handle SOS button click
-    document.getElementById('sosButton').addEventListener('click', () => {
-      siren.play();
-      document.getElementById('status').style.display = 'block';
-      getLocation();
-      setTimeout(() => {
-        document.getElementById('status').textContent = "SOS Sent Successfully!";
-        document.getElementById('contactOptions').style.display = 'flex';
-        siren.pause(); siren.currentTime = 0;
-        alert("Your location is sent\nHelp will be arrived soon!");
-        setTimeout(() => {
-          document.getElementById('status').style.display = 'none';
-        }, 3000);
-      }, 2000);
-    });
+    // ── SOS TRIGGER ──
+    function triggerSOS() {
+      const btn = document.getElementById('sosButton');
+      const statusBar = document.getElementById('statusBar');
+      const statusText = document.getElementById('statusText');
 
-    // Get user location and update map
+      btn.classList.add('triggered');
+      siren.play();
+      showStatus('Sending SOS — locating you…', false);
+      getLocation();
+
+      setTimeout(() => {
+        siren.pause(); siren.currentTime = 0;
+        btn.classList.remove('triggered');
+        showStatus('SOS Sent — Help is on the way!', true);
+        document.getElementById('shareSection').classList.add('show');
+        setTimeout(() => hideStatus(), 5000);
+      }, 2500);
+    }
+
+    function showStatus(msg, success) {
+      const bar = document.getElementById('statusBar');
+      document.getElementById('statusText').textContent = msg;
+      bar.classList.add('show');
+      bar.classList.toggle('success', success);
+    }
+
+    function hideStatus() {
+      document.getElementById('statusBar').classList.remove('show');
+    }
+
+    // ── GEOLOCATION ──
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            userLocation = L.latLng(lat, lng);
-            map.setView(userLocation, 13);
-            if (marker) map.removeLayer(marker);
-            marker = L.marker(userLocation, { icon: sosIcon })
-              .addTo(map)
-              .bindPopup("<b>Emergency Location</b><br>SOS Sent Here")
-              .openPopup();
+          pos => {
+            const { latitude: lat, longitude: lng } = pos.coords;
+            setUserLocation(lat, lng, 'Emergency Location — SOS Sent Here');
             updateWeather(lat, lng);
           },
-          (err) => {
-            console.error("Geolocation error:", err.message);
-            document.getElementById('status').textContent = "Location error. Using default.";
-            userLocation = L.latLng(20.5937, 78.9629);
-            if (marker) map.removeLayer(marker);
-            marker = L.marker(userLocation, { icon: sosIcon })
-              .addTo(map)
-              .bindPopup("Default Location")
-              .openPopup();
+          err => {
+            console.warn('Geolocation error:', err.message);
+            setUserLocation(20.5937, 78.9629, 'Default Location (India)');
           }
         );
       } else {
-        alert("Geolocation not supported.");
-        userLocation = L.latLng(20.5937, 78.9629);
+        setUserLocation(20.5937, 78.9629, 'Default Location');
       }
     }
 
-    // Search on Map with Directions
-    document.getElementById('searchBar').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        const query = this.value;
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-          .then(response => response.json())
-          .then(data => {
-            if (data.length > 0) {
-              const { lat, lon } = data[0];
-              map.setView([lat, lon], 13);
-              if (marker) map.removeLayer(marker);
-              marker = L.marker([lat, lon]).addTo(map).bindPopup(query).openPopup();
-              if (userLocation && routingControl) map.removeControl(routingControl);
-              routingControl = L.Routing.control({
-                waypoints: [userLocation, L.latLng(lat, lon)],
-                routeWhileDragging: false,
-                addWaypoints: false,
-                lineOptions: { styles: [{ color: '#ffff00', weight: 6, opacity: 0.8 }] }
-              }).addTo(map);
-              document.getElementById('directions').style.display = 'block';
-              document.getElementById('directions').textContent = `Directions: Follow the yellow route to ${query}.`;
-            } else {
-              alert("Location not found!");
-            }
-          })
-          .catch(err => console.error("Search error:", err));
-      }
-    });
-
-    // Navigate to Quell Zone
-    function navigateToQuellZone(lat, lng) {
-      if (!userLocation) {
-        alert("Waiting for your location...");
-        return;
-      }
-      if (routingControl) map.removeControl(routingControl);
-      routingControl = L.Routing.control({
-        waypoints: [userLocation, L.latLng(lat, lng)],
-        routeWhileDragging: false,
-        addWaypoints: false,
-        lineOptions: { styles: [{ color: '#ffff00', weight: 6, opacity: 0.8 }] }
-      }).addTo(map);
-      document.getElementById('directions').style.display = 'block';
-      document.getElementById('directions').textContent = `Directions: Follow the yellow route to the Quell Zone.`;
+    function setUserLocation(lat, lng, label) {
+      userLocation = L.latLng(lat, lng);
+      map.setView(userLocation, 13);
+      if (userMarker) map.removeLayer(userMarker);
+      userMarker = L.marker(userLocation, { icon: sosIcon })
+        .addTo(map)
+        .bindPopup(`<div style="font-family:'DM Sans',sans-serif;font-weight:600;">${label}</div>`)
+        .openPopup();
     }
 
-    // Map Controls
+    // ── MAP CONTROLS ──
     function locateUser() {
-      if (userLocation) map.setView(userLocation, 13);
-      else alert("Location not available yet.");
+      if (userLocation) { map.setView(userLocation, 14); }
+      else { getLocation(); }
     }
 
     function zoomIn() { map.zoomIn(); }
     function zoomOut() { map.zoomOut(); }
+    function resetMap() { map.setView([20.5937, 78.9629], 5); }
 
-    // Live Tracking
-    function startLiveTracking() {
-      if (!trackingInterval) {
+    function toggleTracking() {
+      const btn = document.getElementById('trackBtn');
+      if (!isTracking) {
+        isTracking = true;
+        btn.classList.add('active');
+        btn.innerHTML = '<i class="fas fa-crosshairs"></i> Stop Live Tracking';
         trackingInterval = setInterval(() => {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                userLocation = L.latLng(lat, lng);
-                map.setView(userLocation, 13);
-                if (marker) map.removeLayer(marker);
-                marker = L.marker(userLocation, { icon: sosIcon })
-                  .addTo(map)
-                  .bindPopup("<b>’apprLive Location</b>")
-                  .openPopup();
-              },
-              (err) => console.error("Tracking error:", err.message)
-            );
-          }
+          navigator.geolocation.getCurrentPosition(pos => {
+            setUserLocation(pos.coords.latitude, pos.coords.longitude, 'Live Location');
+          });
         }, 5000);
-        alert("Live tracking started. Refresh to stop.");
+      } else {
+        isTracking = false;
+        btn.classList.remove('active');
+        btn.innerHTML = '<i class="fas fa-crosshairs"></i> Start Live Tracking';
+        clearInterval(trackingInterval);
+        trackingInterval = null;
       }
     }
 
-    // Share via WhatsApp
+    // ── SEARCH ──
+    document.getElementById('searchBar').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && this.value.trim()) {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.value)}`)
+          .then(r => r.json())
+          .then(data => {
+            if (data.length > 0) {
+              const { lat, lon } = data[0];
+              map.setView([lat, lon], 13);
+              if (userMarker) map.removeLayer(userMarker);
+              userMarker = L.marker([lat, lon]).addTo(map).bindPopup(this.value).openPopup();
+              if (userLocation) { routeTo(userLocation, L.latLng(lat, lon)); }
+              showDirections(`Follow the yellow route to "${this.value}".`);
+            } else {
+              alert('Location not found. Try a different search.');
+            }
+          });
+      }
+    });
+
+    // ── ROUTING ──
+    function navigateToQuellZone(lat, lng) {
+      const dest = L.latLng(lat, lng);
+      map.closePopup();
+      if (!userLocation) {
+        showStatus('Getting your location…', false);
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              setUserLocation(pos.coords.latitude, pos.coords.longitude, 'Your Location');
+              updateWeather(pos.coords.latitude, pos.coords.longitude);
+              routeTo(userLocation, dest);
+              showDirections('Follow the red dashed route on the map to the Quell Zone.');
+              hideStatus();
+            },
+            () => {
+              // fallback: use map centre as origin
+              const centre = map.getCenter();
+              userLocation = centre;
+              routeTo(centre, dest);
+              showDirections('Follow the red dashed route on the map to the Quell Zone. (Enable location for precise routing)');
+              hideStatus();
+            }
+          );
+        } else {
+          const centre = map.getCenter();
+          userLocation = centre;
+          routeTo(centre, dest);
+          showDirections('Follow the red dashed route on the map to the Quell Zone.');
+          hideStatus();
+        }
+        return;
+      }
+      routeTo(userLocation, dest);
+      showDirections('Follow the red dashed route on the map to the Quell Zone.');
+    }
+
+    function routeTo(from, to) {
+      if (routingControl) { map.removeControl(routingControl); routingControl = null; }
+      routingControl = L.Routing.control({
+        waypoints: [from, to],
+        routeWhileDragging: false,
+        addWaypoints: false,
+        show: false,
+        collapsible: true,
+        lineOptions: {
+          styles: [
+            { color: '#E8321A', weight: 6, opacity: 0.9 },
+            { color: '#ff6347', weight: 3, opacity: 0.7, dashArray: '10,8' }
+          ]
+        },
+        createMarker: (i, wp) => {
+          if (i === 0) return null; // hide origin marker (we have our own)
+          // destination pin
+          return L.marker(wp.latLng, {
+            icon: L.divIcon({
+              className: '',
+              html: `<div style="width:28px;height:28px;background:#22c55e;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 0 0 3px rgba(34,197,94,0.35),0 4px 10px rgba(0,0,0,0.4);"><span style="color:#fff;font-size:11px;font-weight:bold;">✚</span></div>`,
+              iconSize: [28, 28],
+              iconAnchor: [14, 14]
+            })
+          });
+        }
+      }).addTo(map);
+
+      // Fit map to show full route
+      routingControl.on('routesfound', e => {
+        const bounds = L.latLngBounds(e.routes[0].coordinates);
+        map.fitBounds(bounds, { padding: [60, 60] });
+      });
+    }
+
+    function showDirections(text) {
+      const card = document.getElementById('directionsCard');
+      document.getElementById('directionsText').textContent = text;
+      card.style.display = 'block';
+    }
+
+    // ── SHARE ──
     function shareViaWhatsApp() {
-      if (!userLocation) {
-        alert("Location not available.");
-        return;
-      }
-      const lat = userLocation.lat;
-      const lng = userLocation.lng;
-      const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
-      const message = `🚨 EMERGENCY! I need help! My location: ${mapsLink}`;
-      const whatsappURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
-      window.open(whatsappURL, '_blank');
+      if (!userLocation) { alert('Send SOS first to get your location.'); return; }
+      const link = `https://www.google.com/maps?q=${userLocation.lat},${userLocation.lng}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent('🚨 EMERGENCY! I need help! My location: ' + link)}`, '_blank');
     }
 
-    // Share via Email
     function shareViaEmail() {
-      if (!userLocation) {
-        alert("Location not available.");
-        return;
-      }
-      const lat = userLocation.lat;
-      const lng = userLocation.lng;
-      const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
-      const subject = "Emergency SOS";
-      const body = `🚨 EMERGENCY! I need help! My location: ${mapsLink}`;
-      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailtoLink;
+      if (!userLocation) { alert('Send SOS first to get your location.'); return; }
+      const link = `https://www.google.com/maps?q=${userLocation.lat},${userLocation.lng}`;
+      window.location.href = `mailto:?subject=${encodeURIComponent('Emergency SOS')}&body=${encodeURIComponent('🚨 EMERGENCY! I need help! My location: ' + link)}`;
     }
 
-    // Call Emergency
     function callEmergency() {
-      alert("Calling emergency services... (Simulated)\nUse: 112 (India) or local emergency number.");
+      if (confirm('Call emergency services at 112?')) window.location.href = 'tel:112';
     }
 
-    // Simulated Weather Update
+    // ── WEATHER (simulated) ──
     function updateWeather(lat, lng) {
-      document.getElementById('weather').textContent = `Weather: Sunny, 28°C (Simulated for ${lat}, ${lng})`;
+      const conditions = ['Sunny', 'Partly Cloudy', 'Overcast', 'Light Rain', 'Windy'];
+      const temps = [26, 28, 30, 32, 24, 27, 29];
+      const cond = conditions[Math.floor(Math.random() * conditions.length)];
+      const temp = temps[Math.floor(Math.random() * temps.length)];
+      document.getElementById('weatherText').textContent = `${cond}, ${temp}°C — near your location`;
+    }
+
+    updateWeather(20.5, 78.9);
+
+    // ── NAV TOGGLE ──
+    function toggleMenu() {
+      document.getElementById('navLinks').classList.toggle('open');
+      document.getElementById('hamburger').classList.toggle('open');
     }
   </script>
+
+  <script>
+    // Page exit
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || a.target === '_blank') return;
+      e.preventDefault();
+      document.body.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+      document.body.style.opacity = '0';
+      document.body.style.transform = 'translateY(-6px)';
+      setTimeout(() => window.location.href = href, 280);
+    });
+    // Navbar scroll shrink
+    const _nb = document.querySelector('.navbar');
+    if (_nb) window.addEventListener('scroll', () => _nb.classList.toggle('scrolled', window.scrollY > 30), { passive: true });
+    // Active nav
+    const _page = location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nav-links a').forEach(a => { if (a.getAttribute('href') === _page) a.classList.add('active'); });
+    // Map fade in
+    document.getElementById('map').style.cssText += 'animation:mapIn 0.6s ease 0.2s both;';
+    const _s = document.createElement('style');
+    _s.textContent = '@keyframes mapIn{from{opacity:0}to{opacity:1}}';
+    document.head.appendChild(_s);
+  </script>
+
 </body>
 </html>
